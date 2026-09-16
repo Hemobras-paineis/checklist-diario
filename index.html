@@ -5,8 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Sistema Unificado de Inspeção - Hemobrás</title>
 
-  <!-- Bibliotecas de Exportação (Excel e PDF) -->
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <!-- Bibliotecas de Exportação (PDF) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 
@@ -80,6 +79,30 @@
       margin-bottom: 12px; 
       border-bottom: 2px solid #f4f7f6; 
       padding-bottom: 6px; 
+    }
+
+    .banner-edicao {
+      background-color: #ebf8ff;
+      border: 2px solid #3182ce;
+      color: #2b6cb0;
+      padding: 12px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: bold;
+      font-size: 0.95rem;
+    }
+
+    .btn-cancelar {
+      background-color: #e53e3e;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.85rem;
     }
 
     .form-row { 
@@ -216,6 +239,10 @@
       margin-top: 10px; 
     }
 
+    .btn-primary.modo-edicao {
+      background-color: #2b6cb0;
+    }
+
     .export-buttons { 
       display: flex; 
       gap: 8px; 
@@ -240,8 +267,8 @@
       gap: 6px; 
     }
 
-    .btn-excel { 
-      background-color: #1d6f42; 
+    .btn-edit-top { 
+      background-color: #2b6cb0; 
     }
 
     .btn-pdf { 
@@ -265,6 +292,25 @@
       border-radius: 6px; 
       font-size: 0.88rem; 
       line-height: 1.5; 
+      position: relative;
+    }
+
+    .historico-header-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 4px;
+    }
+
+    .btn-item-edit {
+      background-color: #2b6cb0;
+      color: white;
+      border: none;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 0.78rem;
+      font-weight: bold;
+      cursor: pointer;
     }
 
     .historico-item small { 
@@ -292,11 +338,6 @@
       font-size: 0.88rem; 
     }
 
-    .na-row { 
-      background-color: #f0f0f0; 
-      opacity: 0.6; 
-    }
-
     @media (min-width: 600px) {
       body { padding: 20px; }
       .header-text h1 { font-size: 1.8rem; }
@@ -320,6 +361,12 @@
     </header>
 
     <form id="unified-form">
+      <!-- Indicador de Modo Edição -->
+      <div id="banner-edicao" class="banner-edicao" style="display: none;">
+        <span>✏️ Modificando Registro: <span id="info-registro-edicao">#</span></span>
+        <button type="button" onclick="cancelarEdicao()" class="btn-cancelar">❌ Cancelar Edição</button>
+      </div>
+
       <!-- Identificação do Registro -->
       <section class="card">
         <h3>Identificação do Registro</h3>
@@ -348,16 +395,16 @@
             <option value="">-- Escolha a área a ser inspecionada --</option>
             <option value="HVAC_B07A">1. HVAC B07A - 1º Piso (54 Salas, AHUs, CRUs, DOAS)</option>
             <option value="HVAC_B07B">2. HVAC B07B - Prédio B07B (103 Salas, AHUs, CRUs, DOAS)</option>
-            <option value="HVAC_ROUTINE">3. Rotina Diária de Inspeção HVAC B07 (Chillers/Bombas/AHUs/CRUs)</option>
+            <option value="HVAC_ROUTINE">3. Rotina Diária de Inspeção HVAC B07 (Dividido por Sub-sistema: BMS, Chillers, AHUs, etc.)</option>
             <option value="BWT_7A">4. Tratamento de Água BWT 7A (Duosmostil, Multistill, Loopo, Vapotron)</option>
             <option value="BWT_7B">5. Tratamento de Água BWT 7B (Osmotron, Loopo PW, Multistill, Loopo WFI, Vapotron)</option>
             <option value="WWT">6. Estação de Tratamento de Efluentes WWT (Dividido por Equipamento: Elevatória, Equalização, Reator, etc.)</option>
-            <option value="SKIDS_B07">7. Skids Dosadores e Insumos Químicos B07 (CAG/Processo/Torres)</option>
-            <option value="STEAM_2">8. Inspeção Diária Sistema de Vapor Nº 2 (Ref. Form Nº 227 - Caldeiras 2/3, Abrandador, Desaerador, Skids, Blowdown)</option>
-            <option value="GENERATORS">9. Inspeção de Geradores 7F (Ref. Captura 151753 - GEN 1, GEN 2, Bomba, Inversor, Tanque, Resistor)</option>
+            <option value="SKIDS_B07">7. Skids Dosadores e Insumos Químicos B07 (Dividido por Skid: CAG, Processo, Torre, etc.)</option>
+            <option value="STEAM_2">8. Inspeção Diária Sistema de Vapor Nº 2 (Dividido por Equipamento: Caldeiras 2/3, Abrandador, Desaerador, Skids, Blowdown)</option>
+            <option value="GENERATORS">9. Inspeção de Geradores 7F (Dividido por Equipamento: GEN 1, GEN 2, Bomba, Inversor, Tanque, Resistor)</option>
             <option value="ELEC_GROUND">10. Salas Elétricas Térreo (Dividido por Sala e Equipamento: 1041 B07A / 1033 B07B)</option>
             <option value="ELEC_PISO3">11. Salas Elétricas Piso 3 (Dividido por Sala e Equipamento: 3003 B07A / 3011 B07B)</option>
-            <option value="B14">12. Rotina Diária B14 (Filtração, Cloração, Incêndio, Drenagem, Ar Comprimido)</option>
+            <option value="B14">12. Rotina Diária B14 (Dividido por Sub-sistema: Filtração, Cloração, Incêndio, Drenagem, Ar Comprimido)</option>
           </select>
         </div>
       </section>
@@ -388,7 +435,7 @@
           <input type="text" id="observacoes-leitura" placeholder="Registre anomalias globais, EAM/TAG, paralisações, manutenção ou observações gerais">
         </div>
 
-        <button type="button" onclick="salvarLeitura()" class="btn-primary">Registrar Leitura no Módulo</button>
+        <button type="button" id="btn-salvar-main" onclick="salvarLeitura()" class="btn-primary">Registrar Leitura no Módulo</button>
       </section>
     </form>
 
@@ -397,7 +444,7 @@
       <div class="header-with-actions">
         <h3>Histórico Unificado de Registros</h3>
         <div class="export-buttons">
-          <button type="button" onclick="exportarExcel()" class="btn-export btn-excel">📊 Relatório Excel (Filtrado)</button>
+          <button type="button" onclick="iniciarEdicaoPrimeiroRegistro()" class="btn-export btn-edit-top">✏️ Editar Registro Selecionado</button>
           <button type="button" onclick="exportarPDF()" class="btn-export btn-pdf">📄 Relatório PDF (Filtrado)</button>
         </div>
       </div>
@@ -459,9 +506,10 @@
   </div>
 
   <script>
-    const CHAVE_STORAGE = "hemobras_unificado_master_v30";
+    const CHAVE_STORAGE = "hemobras_unificado_master_v34";
     let leituras = [];
     let leiturasExibidas = [];
+    let editandoId = null;
 
     function criarBaseHVAC(prefixo, salasInfo, ahusCount, cruCount) {
       const data = {};
@@ -556,7 +604,39 @@
     const baseHVAC_B07A = criarBaseHVAC("7A", salasB07A, 4, 1);
     const baseHVAC_B07B = criarBaseHVAC("7B", salasB07B, 9, 4);
 
-    // BWT 7A - EQUIPAMENTOS INDIVIDUAIS (pH 8.0 a 10.0)
+    const dataHVAC_Routine_Equipamentos = {
+      "Supervisório / BMS": null,
+      "Chillers CAG": null,
+      "Bombas de Água Gelada": null,
+      "AHUs (Unidades Tratamento de Ar)": null,
+      "Exaustores": null,
+      "CRUs (Climatizadores de Precisão)": null
+    };
+
+    const hvacRoutineEquipItems = {
+      "Supervisório / BMS": [
+        "1. Verificar falhas/alarme no supervisório",
+        "2. Verificar temperaturas das salas via supervisório"
+      ],
+      "Chillers CAG": [
+        "3. Verificar bombas dos Chillers (óleo/ruído/vazamentos)",
+        "4. Verificar Chillers em campo (entr/saída temp/pressão)"
+      ],
+      "Bombas de Água Gelada": [
+        "3. Verificar bombas dos Chillers (óleo/ruído/vazamentos)",
+        "4. Verificar pressão de sucção e descarga das bombas"
+      ],
+      "AHUs (Unidades Tratamento de Ar)": [
+        "5. Verificar funcionamento das AHUs (correias/filtros/dreno)"
+      ],
+      "Exaustores": [
+        "6. Verificar funcionamento dos Exaustores"
+      ],
+      "CRUs (Climatizadores de Precisão)": [
+        "7. Verificar funcionamento das CRUs (alarmes/temp/pressão sucção-descarga)"
+      ]
+    };
+
     const dataBWT_7A_Equipamentos = {
       "DUOSMOSTIL": {
         atividades: [
@@ -623,7 +703,6 @@
       }
     };
 
-    // BWT 7B - EQUIPAMENTOS INDIVIDUAIS (pH 8.0 a 10.0)
     const dataBWT_7B_Equipamentos = {
       "OSMOTRON": {
         atividades: [
@@ -705,7 +784,6 @@
       }
     };
 
-    // WWT ITENS
     const wwtItensChecklist = [
       "1. Verificar INTEGRIDADE do equipamento",
       "2. Verificar se existe vazamento em juntas e válvulas",
@@ -720,7 +798,6 @@
       "11. Verificar tensão de entrada, se está dentro dos padrões do painel"
     ];
 
-    // WWT EQUIPAMENTOS
     const dataWWT_Equipamentos = {
       "Estação Elevatória (25m³)": null,
       "Tanque de Equalização (91m³)": null,
@@ -732,7 +809,109 @@
       "Painéis Elétricos & Automação WWT": null
     };
 
-    // SALAS ELÉTRICAS - ITENS DA CAPTURA
+    const dataSkids_Equipamentos = {
+      "Skid CAG-7A": null,
+      "Skid PROCESSO 7A": null,
+      "Skid HVAC-7A/7B": null,
+      "Skid TORRE 7A": null,
+      "Skid CAG 7B": null,
+      "Skid PROCESSO 7B": null,
+      "Skid ÁGUA GELADA 7B": null,
+      "Skid TORRE 7B": null
+    };
+
+    const skidsItensChecklist = [
+      "1. Verificar nível do tanque de solução / produto químico",
+      "2. Verificar se há vazamento nas bombas dosadoras, mangueiras e conexões",
+      "3. Verificar pressão de injeção e operação das bombas dosadoras",
+      "4. Verificar estado do painel elétrico do skid, sinaleiras e alarmes",
+      "5. Verificar calibração/dosagem e integridade da bacia/dique de contenção"
+    ];
+
+    const steamEquipItems = {
+      "CALDEIRA 2": [
+        "1. Verificar residual (%) do COLOMETRY",
+        "3. Limpeza do filtro de descarga de fundo",
+        "4. Verificar alimentação de gás e skid de válvulas (200 a 340 mbar), fogo baixo e alto",
+        "5. Verificar a pressão de vapor (5 - 8 bar)",
+        "6. Verificar a alimentação química dos pontos de dosagem",
+        "7. Testar a funcionalidade da válvula PSV",
+        "8. Verificar pressão de alimentação de água industrial (< 71 PSI / 5 kgf/cm²)",
+        "9. Verificar filtro dos exaustores caldeira",
+        "10. Verificar se existe vazamento em juntas e válvulas do sistema de vapor",
+        "12. O estado físico e funcional dos Manômetros, transmissores e purgadores"
+      ],
+      "CALDEIRA 3": [
+        "1. Verificar residual (%) do COLOMETRY",
+        "3. Limpeza do filtro de descarga de fundo",
+        "4. Verificar alimentação de gás e skid de válvulas (200 a 340 mbar), fogo baixo e alto",
+        "5. Verificar a pressão de vapor (5 - 8 bar)",
+        "6. Verificar a alimentação química dos pontos de dosagem",
+        "7. Testar a funcionalidade da válvula PSV",
+        "8. Verificar pressão de alimentação de água industrial (< 71 PSI / 5 kgf/cm²)",
+        "9. Verificar filtro dos exaustores caldeira",
+        "10. Verificar se existe vazamento em juntas e válvulas do sistema de vapor",
+        "12. O estado físico e funcional dos Manômetros, transmissores e purgadores"
+      ],
+      "ABRANDADOR": [
+        "2. Verificar nível de tanque de salmoura, e abastecer caso necessário",
+        "8. Verificar pressão de alimentação de água industrial (< 71 PSI / 5 kgf/cm²)",
+        "10. Verificar se existe vazamento em juntas e válvulas do sistema de vapor",
+        "12. O estado físico e funcional dos Manômetros, transmissores e purgadores"
+      ],
+      "DESAERADOR": [
+        "5. Verificar a pressão de vapor (5 - 8 bar)",
+        "6. Verificar a alimentação química dos pontos de dosagem",
+        "7. Testar a funcionalidade da válvula PSV",
+        "10. Verificar se existe vazamento em juntas e válvulas do sistema de vapor",
+        "12. O estado físico e funcional dos Manômetros, transmissores e purgadores"
+      ],
+      "SKID VAPOR B. 7A/7B e Bomba de Condensado": [
+        "7. Testar a funcionalidade da válvula PSV",
+        "10. Verificar se existe vazamento em juntas e válvulas do sistema de vapor",
+        "11. Realizar dreno linha de condensado próximo aos SKIDs de vapor",
+        "12. O estado físico e funcional dos Manômetros, transmissores e purgadores",
+        "13. Verificação de PSV's dos Skids de vapor médio e alto",
+        "14. Verificação das bombas de condensado do 7A e 7B (vazamento, purga, funcionalidade)"
+      ],
+      "BLOWDOWN / ANOMALIAS & OUTRAS ANOTAÇÕES": [
+        "3. Limpeza do filtro de descarga de fundo",
+        "10. Verificar se existe vazamento em juntas e válvulas do sistema de vapor",
+        "12. O estado físico e funcional dos Manômetros, transmissores e purgadores"
+      ]
+    };
+
+    const dataSteam2 = {
+      "CALDEIRA 2": null,
+      "CALDEIRA 3": null,
+      "ABRANDADOR": null,
+      "DESAERADOR": null,
+      "SKID VAPOR B. 7A/7B e Bomba de Condensado": null,
+      "BLOWDOWN / ANOMALIAS & OUTRAS ANOTAÇÕES": null
+    };
+
+    const generatorItensCaptura = [
+      "1. Verificar INTEGRIDADE do equipamento",
+      "2. Verificar o funcionamento geral do Gerador / equipamento",
+      "3. Verificar se não há falhas no sistema",
+      "4. Verificar condições de fixação e suportações",
+      "5. Verificar organização de canaletas internas e organizar desenho elétrico",
+      "6. Verificar nível de óleo diesel / lubrificante",
+      "7. Verificar o indicador de restrição do filtro de ar (se instalado)",
+      "8. Verificar o sistema de admissão de ar quanto a fugas",
+      "9. Verificar o fluido de refrigeração dos radiadores",
+      "10. Verificar se há indícios de desgastes nas correias e tensão"
+    ];
+
+    const dataGenerators = {
+      "GERADOR GEN 1": null,
+      "GERADOR GEN 2": null,
+      "BOMBA DE RECIRCULAÇÃO": null,
+      "INVERSOR": null,
+      "TANQUE DE DIESEL": null,
+      "RESISTOR DE ATERRAMENTO": null
+    };
+
     const elecItensCaptura = [
       "1. Verificar INTEGRIDADE do equipamento",
       "2. Verificar entrada de tensão, corrente, potência de média",
@@ -746,7 +925,6 @@
       "10. Verificar Fator de Potência"
     ];
 
-    // SALAS ELÉTRICAS TÉRREO - ESTRUTURA POR SALA E EQUIPAMENTO
     const dataElec_Terreo_Grouped = {
       "Sala 1041 (B07A)": [
         "CÚBICULOS DE MÉDIA 7A-13-NO-QMT-0-001",
@@ -772,7 +950,6 @@
       ]
     };
 
-    // SALAS ELÉTRICAS PISO 3 - ESTRUTURA POR SALA E EQUIPAMENTO
     const dataElec_Piso3_Grouped = {
       "Sala 3003 (B07A)": [
         "CÚBICULOS DE BAIXA 7A-3-E-CCMAC-2-001",
@@ -796,97 +973,53 @@
       ]
     };
 
-    // GERADORES 7F
-    const generatorItensCaptura = [
-      "1. Verificar INTEGRIDADE do equipamento",
-      "2. Verificar o funcionamento geral do Gerador",
-      "3. Verificar se não há falhas no sistema",
-      "4. Verificar condições de fixação e suportações",
-      "5. Verificar organização de canaletas internas e organizar desenho elétrico",
-      "6. Verificar nível de óleo diesel",
-      "7. Verificar o indicador de restrição do filtro de ar (se instalado), se o indicador de serviço indicar vermelho, substitua os elementos do filtro de ar.",
-      "8. Verificar o sistema de admissão de ar quanto a fugas: inspecionar visualmente o sistema de admissão de ar quanto a indícios de desgaste ou danos.",
-      "9. Verificar o fluido de refrigeração dos radiadores",
-      "10. Verificar se há indícios de desgastes nas correias (patinação na hora de entrada do gerador), verificar visualmente tensão das correias."
-    ];
-
-    const dataGenerators = {
-      "Visão Geral dos Geradores 7F": null,
-      "GERADOR GEN 1": null,
-      "GERADOR GEN 2": null,
-      "BOMBA DE RECIRCULAÇÃO": null,
-      "INVERSOR": null,
-      "TANQUE DE DIESEL": null,
-      "RESISTOR DE ATERRAMENTO": null
+    const dataB14_Equipamentos = {
+      "SISTEMA DE FILTRAÇÃO (Filtros BAG & Zeólita)": null,
+      "SISTEMA DE CLORAÇÃO (Bomba, Rotâmetro & Hipoclorito)": null,
+      "SISTEMA DE INCÊNDIO (Bombas Jockey, Diesel & Elétrica)": null,
+      "SISTEMA DE DRENAGEM DO FOSSO": null,
+      "SISTEMA DE AR COMPRIMIDO": null
     };
 
-    // SISTEMA DE VAPOR Nº 2 (Form Nº 227)
-    const steamItensCaptura = [
-      "1. Verificar residual (%) do COLOMETRY",
-      "2. Verificar nível de tanque de salmoura, e abastecer caso necessário",
-      "3. Limpeza do filtro de descarga de fundo",
-      "4. Verificar alimentação de gás e skid de valvulas(pressão entre 200 a 340 mbar) , fogo baixo e alto(sem alarme=ok; alarmando=ok)",
-      "5. Verificar a pressão de vapor(5 - 8 bar)",
-      "6. Verificar a alimentação química dos pontos de dosagem",
-      "7. Testar a funcionalidade da válvula PSV",
-      "8. Verificar pressão de alimentação de água industrial- Pressão<71 PSI(5 kgf/cm²)",
-      "9. Verificar filtro dos exaustores caldeira",
-      "10. Verificar se existe vazamento em juntas e válvulas do sistema de vapor",
-      "11. Realizar dreno linha de condensado próximo aos SKIDs de vapor",
-      "12. O estado físico e funcional dos Manômetros; transmissores e purgadores",
-      "13. Verificação de PSV's dos Skids de vapor médio e alto",
-      "14. Verificação das bombas de condensado do 7 A e 7B(vazamento, purga,funcionalidade)"
-    ];
-
-    const steamAplicabilidade = {
-      "ABRANDADOR": [1],
-      "CALDEIRA 2": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
-      "CALDEIRA 3": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
-      "DESAERADOR": [4, 6, 9, 11, 12],
-      "SKID VAPOR B. 7A/7B e Bomba condensado": [4, 6, 9, 10, 11, 12, 13]
+    const b14EquipItems = {
+      "SISTEMA DE FILTRAÇÃO (Filtros BAG & Zeólita)": [
+        "1. Filtração - Pressão Entrada/Saída Filtro BAG FB 0001",
+        "2. Filtração - Pressão Entrada/Saída Filtro BAG FB 0002",
+        "3. Filtração - Pressão Entrada/Saída Filtro Zeólita FA-0008",
+        "4. Filtração - Pressão Entrada/Saída Filtro Zeólita FA-0009",
+        "5. Filtração - Verificar vazamentos e integridade física dos filtros"
+      ],
+      "SISTEMA DE CLORAÇÃO (Bomba, Rotâmetro & Hipoclorito)": [
+        "1. Cloração - Status de Operação da Bomba BC-0004",
+        "2. Cloração - Controlador de Dosagem de Cloro e Alarmes",
+        "3. Cloração - Vazão no Rotâmetro (Padrão: 10 GPH)",
+        "4. Cloração - Nível Solução Hipoclorito (Recarregar se < 30L)",
+        "5. Cloração - Teste Nível Cloro Saída (WC B12)",
+        "6. Cloração - Teste Nível Cloro Saída (Poste B14)"
+      ],
+      "SISTEMA DE INCÊNDIO (Bombas Jockey, Diesel & Elétrica)": [
+        "1. Incêndio - Pressão Manômetro Bomba Jockey",
+        "2. Incêndio - Pressão Manômetro Bomba Diesel",
+        "3. Incêndio - Pressão Manômetro Bomba Elétrica",
+        "4. Incêndio - Status Bombas Jockey/Diesel/Elétrica (Manual/Auto/OFF)",
+        "5. Incêndio - Nível de combustível e carga das baterias (Bomba Diesel)"
+      ],
+      "SISTEMA DE DRENAGEM DO FOSSO": [
+        "1. Drenagem Fosso - Boia e Operação da Bomba do Fosso",
+        "2. Drenagem Fosso - Limpeza do fosso e ausência de ruídos na bomba"
+      ],
+      "SISTEMA DE AR COMPRIMIDO": [
+        "1. Ar Comprimido - Status e Pressão do Compressor",
+        "2. Ar Comprimido - Nível de óleo e drenagem automática do reservatório"
+      ]
     };
-
-    const dataSteam2 = {
-      "Visão Geral do Sistema de Vapor": null,
-      "CALDEIRA 2": null,
-      "CALDEIRA 3": null,
-      "ABRANDADOR": null,
-      "DESAERADOR": null,
-      "SKID VAPOR B. 7A/7B e Bomba condensado": null,
-      "BLOWDOWN / ANOMALIAS & OUTRAS ANOTAÇÕES": null
-    };
-
-    // B14 ITENS
-    const b14Itens = [
-      "1. Filtração - Pressão Entrada/Saída Filtro BAG FB 0001",
-      "2. Filtração - Pressão Entrada/Saída Filtro BAG FB 0002",
-      "3. Filtração - Pressão Entrada/Saída Filtro Zeólita FA-0008",
-      "4. Filtração - Pressão Entrada/Saída Filtro Zeólita FA-0009",
-      "5. Cloração - Status de Operação da Bomba BC-0004",
-      "6. Cloração - Controlador de Dosagem de Cloro e Alarmes",
-      "7. Cloração - Vazão no Rotâmetro (Padrão: 10 GPH)",
-      "8. Cloração - Nível Solução Hipoclorito (Recarregar se < 30L)",
-      "9. Cloração - Teste Nível Cloro Saída (WC B12)",
-      "10. Cloração - Teste Nível Cloro Saída (Poste B14)",
-      "11. Incêndio - Pressão Manômetro Bomba Jockey",
-      "12. Incêndio - Pressão Manômetro Bomba Diesel",
-      "13. Incêndio - Pressão Manômetro Bomba Elétrica",
-      "14. Incêndio - Status Bombas Jockey/Diesel/Elétrica (Manual/Auto/OFF)",
-      "15. Drenagem Fosso - Boia e Operação da Bomba do Fosso",
-      "16. Ar Comprimido - Status e Pressão do Compressor"
-    ];
 
     const modulosConfig = {
       "HVAC_B07A": { titulo: "1. Monitoramento HVAC B07A - 1º Piso", temSubitem: true, isBWT: false, isElec: false, data: baseHVAC_B07A },
       "HVAC_B07B": { titulo: "2. Monitoramento HVAC B07B", temSubitem: true, isBWT: false, isElec: false, data: baseHVAC_B07B },
       "HVAC_ROUTINE": {
-        titulo: "3. Check-list Diário HVAC B07", temSubitem: false, isBWT: false, isElec: false,
-        items: [
-          "1. Verificar falhas/alarme no supervisório", "2. Verificar temperaturas das salas via supervisório",
-          "3. Verificar bombas dos Chillers (óleo/ruído/vazamentos)", "4. Verificar Chillers em campo (entr/saída temp/pressão)",
-          "5. Verificar funcionamento das AHUs (correias/filtros/dreno)", "6. Verificar funcionamento dos Exaustores",
-          "7. Verificar funcionamento das CRUs (alarmes/temp/pressão sucção-descarga)"
-        ]
+        titulo: "3. Check-list Diário HVAC B07 (Dividido por Sub-sistema)", temSubitem: true, isBWT: false, isElec: false,
+        data: dataHVAC_Routine_Equipamentos, equipItems: hvacRoutineEquipItems
       },
       "BWT_7A": { titulo: "4. Tratamento de Água BWT 7A", temSubitem: true, isBWT: true, isElec: false, data: dataBWT_7A_Equipamentos },
       "BWT_7B": { titulo: "5. Tratamento de Água BWT 7B", temSubitem: true, isBWT: true, isElec: false, data: dataBWT_7B_Equipamentos },
@@ -895,16 +1028,16 @@
         data: dataWWT_Equipamentos, items: wwtItensChecklist
       },
       "SKIDS_B07": {
-        titulo: "7. Skids Dosadores e Insumos Químicos B07", temSubitem: false, isBWT: false, isElec: false,
-        items: ["CAG-7A", "PROCESSO 7A", "HVAC-7A/7B", "TORRE 7A", "CAG 7B", "PROCESSO 7B", "ÁGUA GELADA 7B", "TORRE 7B"]
+        titulo: "7. Skids Dosadores e Insumos Químicos B07", temSubitem: true, isBWT: false, isElec: false,
+        data: dataSkids_Equipamentos, items: skidsItensChecklist
       },
       "STEAM_2": {
-        titulo: "8. Inspeção Diária Sistema de Vapor Nº 2 (Ref. Form Nº 227 - Caldeiras 2/3, Abrandador, Desaerador, Skids, Blowdown)",
+        titulo: "8. Inspeção Diária Sistema de Vapor Nº 2 (Dividido por Equipamento - Ref. Form Nº 227)",
         temSubitem: true, isBWT: false, isElec: false, isSteam: true,
-        data: dataSteam2, items: steamItensCaptura
+        data: dataSteam2, equipItems: steamEquipItems
       },
       "GENERATORS": {
-        titulo: "9. Inspeção de Geradores 7F (Ref. Captura 151753 - GEN 1, GEN 2, Bomba, Inversor, Tanque, Resistor)",
+        titulo: "9. Inspeção de Geradores 7F (Ref. Captura 151753 - Dividido por Equipamento)",
         temSubitem: true, isBWT: false, isElec: true,
         data: dataGenerators, items: generatorItensCaptura
       },
@@ -919,9 +1052,8 @@
         dataGrouped: dataElec_Piso3_Grouped, items: elecItensCaptura
       },
       "B14": {
-        titulo: "12. Rotina Diária B14 (Filtração, Cloração, Incêndio, Drenagem, Ar Comprimido)",
-        temSubitem: false, isBWT: false, isElec: false,
-        items: b14Itens
+        titulo: "12. Rotina Diária B14 (Dividido por Sub-sistema)", temSubitem: true, isBWT: false, isElec: false,
+        data: dataB14_Equipamentos, equipItems: b14EquipItems
       }
     };
 
@@ -982,7 +1114,7 @@
 
       renderizarTabela(cfg, subKey);
 
-      if (cfg && cfg.temSubitem && !cfg.isBWT && !cfg.isElec && !cfg.isSteam && cfg.data && cfg.data[subKey]) {
+      if (cfg && cfg.temSubitem && !cfg.isBWT && !cfg.isElec && !cfg.isSteam && cfg.data && cfg.data[subKey] && Array.isArray(cfg.data[subKey])) {
         const [p1, p2, p3, p4] = cfg.data[subKey];
         if (document.getElementById('sp-param1')) document.getElementById('sp-param1').value = p1;
         if (document.getElementById('sp-param2')) document.getElementById('sp-param2').value = p2;
@@ -1067,6 +1199,11 @@
         tbody.innerHTML = htmlRows;
 
       } else if (cfg.isSteam) {
+        if (!selectedItem) {
+          thead.innerHTML = '<tr><th>Selecione um Equipamento do Sistema de Vapor acima para exibir seus itens de inspeção</th></tr>';
+          return;
+        }
+
         if (selectedItem === "CALDEIRA 2" || selectedItem === "CALDEIRA 3") {
           containerQuant.style.display = "block";
           const condutRef = selectedItem === "CALDEIRA 2" ? "4100" : "5800";
@@ -1085,25 +1222,46 @@
           `;
         }
 
-        thead.innerHTML = '<tr><th>Item de Inspeção (Formulário Nº 227)</th><th>Aplicabilidade / Status</th><th>Observação Local</th></tr>';
-        
-        const aplicaveis = steamAplicabilidade[selectedItem] || null;
+        thead.innerHTML = '<tr><th>Item de Inspeção (Formulário Nº 227)</th><th>Status / Resultado</th><th>Observação Local</th></tr>';
+        const itemsList = cfg.equipItems[selectedItem] || [];
 
-        cfg.items.forEach((itemText, idx) => {
-          const isAplicavel = !aplicaveis || aplicaveis.includes(idx);
+        itemsList.forEach((itemText, idx) => {
           const tr = document.createElement('tr');
-          if (!isAplicavel) tr.className = 'na-row';
-
           tr.innerHTML = `
-            <td><strong>${itemText}</strong> ${!isAplicavel ? '<small style="color:#777;">(N/A para este equipamento no Form 227)</small>' : ''}</td>
+            <td><strong>${itemText}</strong></td>
             <td>
               <select id="val-check-${idx}">
-                <option value="${isAplicavel ? 'Conforme / OK (1)' : 'N/A'}" ${!isAplicavel ? 'selected' : ''}>${isAplicavel ? 'Conforme / OK (1)' : 'N/A (Célula Cinza)'}</option>
-                <option value="Não Conforme / NOK (2)">Não Conforme / NOK (2)</option>
-                ${isAplicavel ? '<option value="N/A">N/A</option>' : ''}
+                <option value="Conforme / OK">Conforme / OK</option>
+                <option value="Não Conforme / NOK">Não Conforme / NOK</option>
+                <option value="N/A">N/A</option>
               </select>
             </td>
-            <td><input type="text" id="obs-check-${idx}" placeholder="${isAplicavel ? 'Digite observações do item' : 'N/A'}" ${!isAplicavel ? 'disabled' : ''}></td>
+            <td><input type="text" id="obs-check-${idx}" placeholder="Digite observações do item"></td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+      } else if (cfg.equipItems) {
+        if (!selectedItem) {
+          thead.innerHTML = '<tr><th>Selecione o Equipamento / Sub-sistema acima para exibir seus itens de inspeção</th></tr>';
+          return;
+        }
+
+        thead.innerHTML = '<tr><th>Item de Inspeção</th><th>Status / Resultado</th><th>Observação Local</th></tr>';
+        const itemsList = cfg.equipItems[selectedItem] || [];
+
+        itemsList.forEach((itemText, idx) => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td><strong>${itemText}</strong></td>
+            <td>
+              <select id="val-check-${idx}">
+                <option value="Conforme / OK">Conforme / OK</option>
+                <option value="Não Conforme / NOK">Não Conforme / NOK</option>
+                <option value="N/A">N/A</option>
+              </select>
+            </td>
+            <td><input type="text" id="obs-check-${idx}" placeholder="Digite observações do item"></td>
           `;
           tbody.appendChild(tr);
         });
@@ -1138,7 +1296,7 @@
           return;
         }
 
-        thead.innerHTML = '<tr><th>Item de Inspeção WWT</th><th>Status / Resultado</th><th>Observação Local</th></tr>';
+        thead.innerHTML = '<tr><th>Item de Inspeção</th><th>Status / Resultado</th><th>Observação Local</th></tr>';
         cfg.items.forEach((itemText, idx) => {
           const tr = document.createElement('tr');
           tr.innerHTML = `
@@ -1240,7 +1398,8 @@
 
       } else if (cfg.isSteam) {
         const subKey = document.getElementById('subitem-select').value;
-        if (subKey) { detalheItem += ` - ${subKey}`; }
+        if (!subKey) { alert("Selecione o Equipamento do Sistema de Vapor."); return; }
+        detalheItem += ` - ${subKey}`;
 
         const pAgua = document.getElementById('steam-p-agua')?.value;
         const condut = document.getElementById('steam-condut')?.value;
@@ -1264,8 +1423,24 @@
           if (hhMat) itensDetalhados.push(`  - H/H & Material: ${hhMat}`);
         }
 
-        itensDetalhados.push("• CHECKLIST DIÁRIO OPERACIONAL (Form Nº 227):");
-        cfg.items.forEach((itemText, idx) => {
+        const itemsList = cfg.equipItems[subKey] || [];
+        itensDetalhados.push(`• CHECKLIST OPERACIONAL (${subKey}):`);
+        itemsList.forEach((itemText, idx) => {
+          const val = document.getElementById(`val-check-${idx}`)?.value || "N/A";
+          const obs = document.getElementById(`obs-check-${idx}`)?.value;
+          let text = `  ${idx + 1}. ${itemText}: ${val}`;
+          if (obs && obs.trim() !== "") { text += ` — Obs: ${obs.trim()}`; }
+          itensDetalhados.push(text);
+        });
+
+      } else if (cfg.equipItems) {
+        const subKey = document.getElementById('subitem-select').value;
+        if (!subKey) { alert("Selecione o Equipamento / Sub-sistema."); return; }
+        detalheItem += ` - ${subKey}`;
+
+        const itemsList = cfg.equipItems[subKey] || [];
+        itensDetalhados.push(`• CHECKLIST OPERACIONAL (${subKey}):`);
+        itemsList.forEach((itemText, idx) => {
           const val = document.getElementById(`val-check-${idx}`)?.value || "N/A";
           const obs = document.getElementById(`obs-check-${idx}`)?.value;
           let text = `  ${idx + 1}. ${itemText}: ${val}`;
@@ -1337,21 +1512,96 @@
       const obsGeral = document.getElementById('observacoes-leitura').value || "-";
       const resumoValores = itensDetalhados.join("\n");
 
-      const reg = {
-        id: Date.now(), 
-        data: dataFormatada, 
-        operador, 
-        empresa, 
-        moduloKey: modKey,
-        item: detalheItem, 
-        resumo: resumoValores,
-        obs: obsGeral
-      };
+      if (editandoId !== null) {
+        const index = leituras.findIndex(r => r.id === editandoId);
+        if (index !== -1) {
+          leituras[index] = {
+            id: editandoId,
+            data: dataFormatada,
+            operador,
+            empresa,
+            moduloKey: modKey,
+            item: detalheItem,
+            resumo: resumoValores,
+            obs: obsGeral
+          };
+          alert("Registro atualizado com sucesso!");
+        }
+        cancelarEdicao();
+      } else {
+        const reg = {
+          id: Date.now(), 
+          data: dataFormatada, 
+          operador, 
+          empresa, 
+          moduloKey: modKey,
+          item: detalheItem, 
+          resumo: resumoValores,
+          obs: obsGeral
+        };
+        leituras.unshift(reg);
+        alert("Registro salvo com sucesso!");
+      }
 
-      leituras.unshift(reg);
       salvarNoStorage();
       aplicarFiltros();
-      alert("Registro salvo com sucesso!");
+    }
+
+    function editarRegistro(id) {
+      const reg = leituras.find(r => r.id === id);
+      if (!reg) return;
+
+      editandoId = reg.id;
+      document.getElementById('info-registro-edicao').textContent = `${reg.item} (${reg.operador} - ${reg.data})`;
+      document.getElementById('banner-edicao').style.display = 'flex';
+
+      const btnSalvar = document.getElementById('btn-salvar-main');
+      btnSalvar.textContent = "💾 Salvar Alterações no Registro";
+      btnSalvar.classList.add('modo-edicao');
+
+      document.getElementById('operador').value = reg.operador;
+      document.getElementById('empresa').value = reg.empresa;
+      document.getElementById('data').value = reg.data.replace(" ", "T");
+
+      if (reg.moduloKey) {
+        document.getElementById('modulo').value = reg.moduloKey;
+        alternarModulo();
+
+        const cfg = modulosConfig[reg.moduloKey];
+        if (cfg && cfg.temSubitem) {
+          const partesItem = reg.item.split(" - ");
+          if (partesItem.length > 1) {
+            const subName = partesItem.slice(1).join(" - ");
+            const subSelect = document.getElementById('subitem-select');
+            subSelect.value = subName;
+            carregarSubitemSetpoints();
+          }
+        }
+      }
+
+      document.getElementById('observacoes-leitura').value = reg.obs || "";
+
+      document.getElementById('unified-form').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function iniciarEdicaoPrimeiroRegistro() {
+      const lista = leiturasExibidas.length > 0 ? leiturasExibidas : leituras;
+      if (lista.length === 0) {
+        alert("Nenhum registro disponível para editar no momento.");
+        return;
+      }
+      editarRegistro(lista[0].id);
+    }
+
+    function cancelarEdicao() {
+      editandoId = null;
+      document.getElementById('banner-edicao').style.display = 'none';
+
+      const btnSalvar = document.getElementById('btn-salvar-main');
+      btnSalvar.textContent = "Registrar Leitura no Módulo";
+      btnSalvar.classList.remove('modo-edicao');
+
+      document.getElementById('observacoes-leitura').value = "";
     }
 
     function alternarPeriodoData() {
@@ -1457,48 +1707,16 @@
         const resumoFormatted = (reg.resumo || "").replace(/\n/g, "<br>").replace(/ \| /g, "<br>");
 
         item.innerHTML = `
-          <strong>${reg.item}</strong><br>
+          <div class="historico-header-actions">
+            <strong>${reg.item}</strong>
+            <button type="button" class="btn-item-edit" onclick="editarRegistro(${reg.id})">✏️ Editar</button>
+          </div>
           <small>Operador: <em>${reg.operador}</em> | Empresa: <em>${reg.empresa}</em> (${reg.data})</small>
           <div class="historico-detalhes">${resumoFormatted}</div>
           ${reg.obs && reg.obs !== '-' ? `<small style="margin-top:6px; display:block;"><strong>Obs Geral / Livro de Ocorrência:</strong> \${reg.obs}</small>` : ''}
         `;
         div.appendChild(item);
       });
-    }
-
-    function exportarExcel() {
-      const dadosExportar = leiturasExibidas.length > 0 ? leiturasExibidas : leituras;
-      if (dadosExportar.length === 0) { alert("Nenhum registro encontrado para exportar o relatório."); return; }
-      if (typeof XLSX === 'undefined') { alert("Biblioteca do Excel não carregou."); return; }
-
-      const checklistFiltro = document.getElementById('summary-checklist-text').textContent;
-      const periodoFiltro = document.getElementById('summary-periodo-text').textContent;
-
-      const dataRows = [
-        ["HEMOBRÁS - RELATÓRIO DINÂMICO DE INSPEÇÕES E LEITURAS"],
-        ["Filtro de Checklist:", checklistFiltro],
-        ["Filtro de Período:", periodoFiltro],
-        ["Total de Registros Exibidos:", `${dadosExportar.length}`],
-        ["Data da Emissão:", new Date().toLocaleString('pt-BR')],
-        [],
-        ["Data e Hora", "Operador / Executante", "Empresa", "Módulo / Item Inspecionado", "Detalhamento das Leituras & Observações por Item (Linha a Linha)", "Observações Gerais / Livro de Ocorrência"]
-      ];
-
-      dadosExportar.forEach(i => {
-        dataRows.push([
-          i.data, 
-          i.operador, 
-          i.empresa, 
-          i.item, 
-          (i.resumo || "").replace(/<br\s*\/?>/gi, "\n").replace(/ \| /g, "\n"), 
-          i.obs
-        ]);
-      });
-
-      const ws = XLSX.utils.aoa_to_sheet(dataRows);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Relatorio Filtrado");
-      XLSX.writeFile(wb, `Relatorio_Filtrado_Hemobras_${new Date().toISOString().split('T')[0]}.xlsx`);
     }
 
     function exportarPDF() {
