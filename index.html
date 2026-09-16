@@ -1,0 +1,1553 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Sistema Unificado de Inspeção - Hemobrás</title>
+
+  <!-- Bibliotecas de Exportação (Excel e PDF) -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
+  <style>
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+    }
+
+    body { 
+      background-color: #f4f7f6; 
+      color: #333; 
+      padding: 12px; 
+    }
+
+    .container { 
+      max-width: 920px; 
+      margin: 0 auto; 
+    }
+
+    header { 
+      background-color: #800020; 
+      color: #fff; 
+      padding: 16px; 
+      border-radius: 8px; 
+      margin-bottom: 16px; 
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      text-align: center;
+    }
+
+    .logo-img {
+      max-height: 55px;
+      width: auto;
+      border-radius: 4px;
+      background-color: #ffffff;
+      padding: 4px;
+    }
+
+    .header-text h1 { 
+      font-size: 1.4rem; 
+      margin-bottom: 4px; 
+    }
+
+    .header-text h2 { 
+      font-size: 0.9rem; 
+      font-weight: 300; 
+      opacity: 0.9; 
+    }
+
+    .card { 
+      background: #fff; 
+      padding: 16px; 
+      border-radius: 8px; 
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05); 
+      margin-bottom: 16px; 
+    }
+
+    .card h3 { 
+      color: #800020; 
+      font-size: 1.05rem; 
+      margin-bottom: 12px; 
+      border-bottom: 2px solid #f4f7f6; 
+      padding-bottom: 6px; 
+    }
+
+    .form-row { 
+      display: flex; 
+      gap: 10px; 
+      flex-wrap: wrap; 
+    }
+
+    .form-group { 
+      flex: 1; 
+      min-width: 100%; 
+      display: flex; 
+      flex-direction: column; 
+      margin-bottom: 8px; 
+    }
+
+    .form-group label { 
+      font-weight: 600; 
+      margin-bottom: 6px; 
+      font-size: 0.9rem; 
+      color: #444; 
+    }
+
+    input, select { 
+      padding: 12px; 
+      border: 1px solid #ccc; 
+      border-radius: 6px; 
+      font-size: 16px; 
+      width: 100%; 
+      min-height: 48px; 
+      background-color: #fff; 
+    }
+
+    select { 
+      -webkit-appearance: none; 
+      appearance: none; 
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%333' stroke-width='2'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); 
+      background-repeat: no-repeat; 
+      background-position: right 12px center; 
+      background-size: 16px; 
+      padding-right: 36px; 
+    }
+
+    optgroup {
+      font-weight: bold;
+      color: #800020;
+      background-color: #f8f9fa;
+    }
+
+    .modulo-selector { 
+      background-color: #e9ecef; 
+      border: 2px solid #800020; 
+      font-weight: bold; 
+      color: #800020; 
+    }
+
+    .readonly-input { 
+      background-color: #e9ecef; 
+      font-weight: 600; 
+      color: #495057; 
+    }
+
+    .filter-card { 
+      background-color: #f8f9fa; 
+      border: 1px solid #e2e8f0; 
+      border-radius: 6px; 
+      padding: 12px; 
+      margin-bottom: 12px; 
+    }
+
+    .filter-card h4 { 
+      font-size: 0.92rem; 
+      color: #800020; 
+      margin-bottom: 8px; 
+      display: flex; 
+      align-items: center; 
+      gap: 6px; 
+    }
+
+    .filter-summary { 
+      background-color: #eef2f5; 
+      border-left: 4px solid #800020; 
+      padding: 8px 12px; 
+      margin-top: 10px; 
+      border-radius: 4px; 
+      font-size: 0.85rem; 
+      color: #333; 
+    }
+
+    .table-container { 
+      width: 100%; 
+      overflow-x: auto; 
+      margin-bottom: 15px; 
+    }
+
+    .data-table { 
+      width: 100%; 
+      border-collapse: collapse; 
+      min-width: 520px; 
+    }
+
+    .data-table th, .data-table td { 
+      border: 1px solid #dee2e6; 
+      padding: 10px 8px; 
+      text-align: left; 
+      font-size: 0.88rem; 
+    }
+
+    .data-table th { 
+      background-color: #f8f9fa; 
+      font-weight: 600; 
+    }
+
+    .section-header-th { 
+      background-color: #800020 !important; 
+      color: #ffffff !important; 
+      font-size: 0.92rem; 
+      font-weight: bold; 
+      text-align: left; 
+      padding: 8px 10px; 
+    }
+
+    .btn-primary { 
+      background-color: #800020; 
+      color: white; 
+      padding: 14px; 
+      border: none; 
+      border-radius: 6px; 
+      font-size: 1rem; 
+      cursor: pointer; 
+      width: 100%; 
+      font-weight: bold; 
+      min-height: 48px; 
+      margin-top: 10px; 
+    }
+
+    .export-buttons { 
+      display: flex; 
+      gap: 8px; 
+      width: 100%; 
+      flex-wrap: wrap; 
+    }
+
+    .btn-export { 
+      flex: 1; 
+      min-width: 140px; 
+      padding: 12px; 
+      border: none; 
+      border-radius: 6px; 
+      font-size: 0.88rem; 
+      font-weight: bold; 
+      color: #fff; 
+      text-align: center; 
+      cursor: pointer; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      gap: 6px; 
+    }
+
+    .btn-excel { 
+      background-color: #1d6f42; 
+    }
+
+    .btn-pdf { 
+      background-color: #b30b00; 
+    }
+
+    .header-with-actions { 
+      display: flex; 
+      flex-direction: column; 
+      gap: 10px; 
+      margin-bottom: 12px; 
+      border-bottom: 2px solid #f4f7f6; 
+      padding-bottom: 8px; 
+    }
+
+    .historico-item { 
+      background: #f8f9fa; 
+      border-left: 4px solid #800020; 
+      padding: 12px; 
+      margin-bottom: 10px; 
+      border-radius: 6px; 
+      font-size: 0.88rem; 
+      line-height: 1.5; 
+    }
+
+    .historico-item small { 
+      display: block; 
+      margin-top: 4px; 
+      color: #555; 
+      font-size: 0.82rem; 
+    }
+
+    .historico-detalhes { 
+      margin-top: 8px; 
+      padding: 8px 10px; 
+      background-color: #ffffff; 
+      border-left: 3px solid #800020; 
+      border-radius: 4px; 
+      font-size: 0.85rem; 
+      color: #222; 
+      white-space: pre-wrap; 
+      font-family: monospace, monospace; 
+    }
+
+    .empty-msg { 
+      color: #777; 
+      font-style: italic; 
+      font-size: 0.88rem; 
+    }
+
+    .na-row { 
+      background-color: #f0f0f0; 
+      opacity: 0.6; 
+    }
+
+    @media (min-width: 600px) {
+      body { padding: 20px; }
+      .header-text h1 { font-size: 1.8rem; }
+      .header-with-actions { flex-direction: row; justify-content: space-between; align-items: center; }
+      .form-group { min-width: 200px; }
+      .export-buttons { width: auto; }
+      .btn-export { flex: initial; padding: 10px 18px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="header-content">
+        <img src="logo_hemo.jpeg" alt="Logo Hemobrás" class="logo-img">
+        <div class="header-text">
+          <h1>Hemobrás - Sistema Unificado de Inspeção</h1>
+          <h2>Monitoramento Operacional e Utilidades</h2>
+        </div>
+      </div>
+    </header>
+
+    <form id="unified-form">
+      <!-- Identificação do Registro -->
+      <section class="card">
+        <h3>Identificação do Registro</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="operador">Nome do Operador / Executante:</label>
+            <input type="text" id="operador" required placeholder="Digite seu nome completo">
+          </div>
+          <div class="form-group">
+            <label for="empresa">Empresa:</label>
+            <input type="text" id="empresa" required placeholder="Digite o nome da empresa">
+          </div>
+          <div class="form-group">
+            <label for="data">Data e Hora:</label>
+            <input type="datetime-local" id="data" required>
+          </div>
+        </div>
+      </section>
+
+      <!-- Seleção do Módulo -->
+      <section class="card">
+        <h3>Módulo / Formato de Inspeção</h3>
+        <div class="form-group">
+          <label for="modulo">Selecione o Módulo de Inspeção:</label>
+          <select id="modulo" class="modulo-selector" onchange="alternarModulo()" required>
+            <option value="">-- Escolha a área a ser inspecionada --</option>
+            <option value="HVAC_B07A">1. HVAC B07A - 1º Piso (54 Salas, AHUs, CRUs, DOAS)</option>
+            <option value="HVAC_B07B">2. HVAC B07B - Prédio B07B (103 Salas, AHUs, CRUs, DOAS)</option>
+            <option value="HVAC_ROUTINE">3. Rotina Diária de Inspeção HVAC B07 (Chillers/Bombas/AHUs/CRUs)</option>
+            <option value="BWT_7A">4. Tratamento de Água BWT 7A (Duosmostil, Multistill, Loopo, Vapotron)</option>
+            <option value="BWT_7B">5. Tratamento de Água BWT 7B (Osmotron, Loopo PW, Multistill, Loopo WFI, Vapotron)</option>
+            <option value="WWT">6. Estação de Tratamento de Efluentes WWT (Dividido por Equipamento: Elevatória, Equalização, Reator, etc.)</option>
+            <option value="SKIDS_B07">7. Skids Dosadores e Insumos Químicos B07 (CAG/Processo/Torres)</option>
+            <option value="STEAM_2">8. Inspeção Diária Sistema de Vapor Nº 2 (Ref. Form Nº 227 - Caldeiras 2/3, Abrandador, Desaerador, Skids, Blowdown)</option>
+            <option value="GENERATORS">9. Inspeção de Geradores 7F (Ref. Captura 151753 - GEN 1, GEN 2, Bomba, Inversor, Tanque, Resistor)</option>
+            <option value="ELEC_GROUND">10. Salas Elétricas Térreo (Dividido por Sala e Equipamento: 1041 B07A / 1033 B07B)</option>
+            <option value="ELEC_PISO3">11. Salas Elétricas Piso 3 (Dividido por Sala e Equipamento: 3003 B07A / 3011 B07B)</option>
+            <option value="B14">12. Rotina Diária B14 (Filtração, Cloração, Incêndio, Drenagem, Ar Comprimido)</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- SEÇÃO DINÂMICA DE MONITORAMENTO -->
+      <section class="card" id="secao-dinamica" style="display: none;">
+        <h3 id="titulo-modulo">Parâmetros do Módulo</h3>
+        
+        <div id="container-subitem" class="form-group" style="display: none;">
+          <label for="subitem-select">Equipamento / Sub-sistema / Painel:</label>
+          <select id="subitem-select" onchange="carregarSubitemSetpoints()"></select>
+        </div>
+
+        <div id="container-parametros-quantitativos" style="display: none; margin-bottom: 15px; background-color: #f8f9fa; padding: 12px; border-radius: 6px; border: 1px solid #800020;">
+          <h4 style="color: #800020; margin-bottom: 8px; font-size: 0.95rem;">📊 Medições Físico-Químicas e Operacionais (Ref. Form Nº 227)</h4>
+          <div class="form-row" id="row-campos-quantitativos"></div>
+        </div>
+
+        <div class="table-container">
+          <table class="data-table">
+            <thead id="thead-parametros"></thead>
+            <tbody id="tbody-parametros"></tbody>
+          </table>
+        </div>
+
+        <div class="form-group">
+          <label for="observacoes-leitura">Observações Gerais / Livro de Ocorrência:</label>
+          <input type="text" id="observacoes-leitura" placeholder="Registre anomalias globais, EAM/TAG, paralisações, manutenção ou observações gerais">
+        </div>
+
+        <button type="button" onclick="salvarLeitura()" class="btn-primary">Registrar Leitura no Módulo</button>
+      </section>
+    </form>
+
+    <!-- Histórico Unificado -->
+    <section class="card">
+      <div class="header-with-actions">
+        <h3>Histórico Unificado de Registros</h3>
+        <div class="export-buttons">
+          <button type="button" onclick="exportarExcel()" class="btn-export btn-excel">📊 Relatório Excel (Filtrado)</button>
+          <button type="button" onclick="exportarPDF()" class="btn-export btn-pdf">📄 Relatório PDF (Filtrado)</button>
+        </div>
+      </div>
+
+      <div class="filter-card">
+        <h4>🔍 Filtros do Histórico e Gerador de Relatório</h4>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="filtro-checklist">Filtrar por Checklist / Módulo:</label>
+            <select id="filtro-checklist" onchange="aplicarFiltros()">
+              <option value="TODOS">-- Todos os Módulos / Checklists --</option>
+              <option value="HVAC_B07A">1. HVAC B07A - 1º Piso</option>
+              <option value="HVAC_B07B">2. HVAC B07B - Prédio B07B</option>
+              <option value="HVAC_ROUTINE">3. Check-list Diário HVAC B07</option>
+              <option value="BWT_7A">4. Tratamento de Água BWT 7A</option>
+              <option value="BWT_7B">5. Tratamento de Água BWT 7B</option>
+              <option value="WWT">6. Estação WWT (Efluentes)</option>
+              <option value="SKIDS_B07">7. Skids Dosadores e Insumos B07 (CAG)</option>
+              <option value="STEAM_2">8. Sistema de Vapor Nº 2 (Form 227)</option>
+              <option value="GENERATORS">9. Inspeção de Geradores 7F</option>
+              <option value="ELEC_GROUND">10. Salas Elétricas Térreo</option>
+              <option value="ELEC_PISO3">11. Salas Elétricas Piso 3</option>
+              <option value="B14">12. Rotina Diária B14</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="filtro-periodo">Filtrar por Período de Data:</label>
+            <select id="filtro-periodo" onchange="alternarPeriodoData()">
+              <option value="TODOS">-- Todo o Histórico --</option>
+              <option value="HOJE">Hoje</option>
+              <option value="SEMANA">Esta Semana (Últimos 7 dias)</option>
+              <option value="MES">Este Mês</option>
+              <option value="CUSTOM">Intervalo Personalizado</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="container-datas-custom" class="form-row" style="display: none; margin-top: 8px;">
+          <div class="form-group">
+            <label for="filtro-data-inicio">Data Inicial:</label>
+            <input type="date" id="filtro-data-inicio" onchange="aplicarFiltros()">
+          </div>
+          <div class="form-group">
+            <label for="filtro-data-fim">Data Final:</label>
+            <input type="date" id="filtro-data-fim" onchange="aplicarFiltros()">
+          </div>
+        </div>
+
+        <div id="filter-summary-info" class="filter-summary">
+          <strong>Filtros Ativos:</strong> <span id="summary-checklist-text">Todos os Checklists</span> | <span id="summary-periodo-text">Todo o Histórico</span> (<strong id="summary-count-text">0 registros</strong>)
+        </div>
+      </div>
+
+      <div id="historico" class="historico-list">
+        <p class="empty-msg">Nenhum registro armazenado até o momento.</p>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const CHAVE_STORAGE = "hemobras_unificado_master_v30";
+    let leituras = [];
+    let leiturasExibidas = [];
+
+    function criarBaseHVAC(prefixo, salasInfo, ahusCount, cruCount) {
+      const data = {};
+      salasInfo.forEach(([num, vaz, temp, press, umid]) => {
+        data[num] = [vaz, temp, press, umid];
+      });
+      for (let i = 1; i <= ahusCount; i++) {
+        data[`AHU-${prefixo}-${i}`] = ["5000 m³/h", "10.0 °C", "50.0 Pa", "Abs: 6.0 g/m³"];
+      }
+      data[`DOAS ${prefixo}`] = ["31184 m³/h", "10.0 °C", "1000 bar", "Insuf: 55.0%"];
+      for (let i = 1; i <= cruCount; i++) {
+        data[`CRU-${prefixo}-${i}`] = ["1,7 a 3,0 psi", "2,0 a 8,0 °C", "12,0 a 14,5 psi", "10,0 a 20,0 °C"];
+      }
+      return data;
+    }
+
+    const salasB07A = [
+      ["A2001", "-", "20.0 °C", "37.5 Pa", "75.0%"],
+      ["A2002", "-", "20.0 °C", "62.5 Pa", "V1:45% V2:45% V3:45%"],
+      ["A2003", "-", "20.0 °C", "50.0 Pa", "V1:40% V2:35%"],
+      ["A2004", "2500 m³/h", "20.0 °C", "25.0 Pa", "73.8%"],
+      ["A2005", "-", "20.0 °C", "12.5 Pa", "60.0%"],
+      ["A2006", "-", "22.0 °C", "-", "45.0%"],
+      ["A2007", "-", "20.0 °C", "12.5 Pa", "52.0%"],
+      ["A2008", "-", "22.0 °C", "-", "45.0%"],
+      ["A2009", "-", "20.0 °C", "37.5 Pa", "60.0%"],
+      ["A2011", "-", "22.0 °C", "-", "25.0%"],
+      ["A2012", "-", "22.0 °C", "-", "40.0%"],
+      ["A2013", "2720 m³/h", "22.0 °C", "-", "50.0%"],
+      ["A2014", "-", "22.0 °C", "-", "50.0%"],
+      ["A2015", "-", "22.0 °C", "-", "100.0%"],
+      ["A2016", "-", "22.0 °C", "-", "35.0%"],
+      ["A2017", "-", "20.0 °C", "12.5 Pa", "50.0%"],
+      ["A2018", "-", "22.0 °C", "-", "10.0%"],
+      ["A2019", "2720 m³/h", "22.0 °C", "-", "70.0%"],
+      ["A2020", "2720 m³/h", "22.0 °C", "-", "50.0%"],
+      ["A2021", "-", "22.0 °C", "-", "V1:65% V2:65%"],
+      ["A2022", "2720 m³/h", "22.0 °C", "-", "70.0%"],
+      ["A2023", "-", "20.0 °C", "37.5 Pa", "55.0%"],
+      ["A2025", "-", "20.0 °C", "72.0 Pa", "V1:52% V2:50% V3:50% V4:52% V5:40%"],
+      ["A2026", "-", "20.0 °C", "62.5 Pa", "52.0%"],
+      ["A2027", "-", "20.0 °C", "62.5 Pa", "40.0%"],
+      ["A2028", "1650 m³/h", "20.0 °C", "37.5 Pa", "40.0%"],
+      ["A2029", "-", "20.0 °C", "50.0 Pa", "40.0%"],
+      ["A2030", "-", "20.0 °C", "12.5 Pa", "45.0%"],
+      ["A2031", "-", "20.0 °C", "62.5 Pa", "35.0%"],
+      ["A2032", "-", "20.0 °C", "62.5 Pa", "35.0%"],
+      ["A2033", "-", "20.0 °C", "50.0 Pa", "V1:47.6% V2:47.6%"],
+      ["A2034", "-", "20.0 °C", "37.5 Pa", "45.0%"],
+      ["A2035", "-", "20.0 °C", "37.5 Pa", "50.0%"],
+      ["A2036", "-", "20.0 °C", "37.5 Pa", "V1:38% V2:38%"],
+      ["A2037", "948 m³/h", "20.0 °C", "37.5 Pa", "V1:35% V2:35%"],
+      ["A2038", "-", "20.0 °C", "37.5 Pa", "45.0%"],
+      ["A2039", "-", "20.0 °C", "37.5 Pa", "45.0%"],
+      ["A2040", "856 m³/h", "20.0 °C", "12.5 Pa", "45.0%"],
+      ["A2041", "-", "20.0 °C", "50.0 Pa", "60.0%"],
+      ["A2042", "-", "22.0 °C", "-", "100.0%"],
+      ["A2044", "-", "20.0 °C", "25.0 Pa", "V1:65% V2:90% V3:50%"],
+      ["A2046", "-", "20.0 °C", "12.5 Pa", "85.0%"],
+      ["A2048", "2154 m³/h", "20.0 °C", "12.5 Pa", "5.8%"],
+      ["A2049", "-", "22.0 °C", "-", "45.0%"],
+      ["A2050", "-", "22.0 °C", "-", "75.0%"],
+      ["A2051", "2720 m³/h", "-", "-", "50.0%"],
+      ["A2052", "2720 m³/h", "-", "-", "45.0%"],
+      ["A2053", "2154 m³/h", "20.0 °C", "12.5 Pa", "47.8%"]
+    ];
+
+    const salasB07B = [
+      ["B1001", "-", "22.0 °C", "-", "-"], ["B1002", "-", "20.0 °C", "-", "-"],
+      ["B1023", "6750 m³/h", "20.0 °C", "25.0 Pa", "100.0%"],
+      ["B1024", "700 m³/h", "22.0 °C", "12.5 Pa", "61.0%"],
+      ["B1025", "700 m³/h", "22.0 °C", "12.5 Pa", "100.0%"],
+      ["B2001", "10400 m³/h", "20.0 °C", "62.5 Pa", "V1:100% V2:70%"],
+      ["B2002", "1600 m³/h", "20.0 °C", "50.0 Pa", "85.0%"],
+      ["B2015", "900 m³/h", "20.0 °C", "25.0 Pa", "100.0%"],
+      ["B2016", "8200 m³/h", "20.0 °C", "70.0 Pa", "V1:100% V2:62%"],
+      ["B2021", "3000 m³/h", "20.0 °C", "37.5 Pa", "80.0%"],
+      ["B2028", "17000 m³/h", "20.0 °C", "37.5 Pa", "V1:100% V2:100%"],
+      ["B2037", "11000 m³/h", "20.0 °C", "50.0 Pa", "V1:100% V2:100%"],
+      ["B2039", "29000 m³/h", "20.0 °C", "50.0 Pa", "V1:100% V2:100% V3:100% V4:100%"],
+      ["B2044", "8200 m³/h", "20.0 °C", "62.5 Pa", "V1:100% V2:60%"],
+      ["B2048", "15600 m³/h", "20.0 °C", "37.5 Pa", "V1:100% V2:100% V3:100% V4:70% V5:70%"],
+      ["B2051", "300 m³/h", "22.0 °C", "0.0 Pa", "100.0%"],
+      ["B2052", "200 m³/h", "22.0 °C", "0.0 Pa", "48.0%"],
+      ["B2053", "2400 m³/h", "20.0 °C", "37.5 Pa", "98.0%"],
+      ["B2056", "13800 m³/h", "22.0 °C", "12.5 Pa", "V1:100% V2:100%"],
+      ["B2057", "700 m³/h", "20.0 °C", "25.0 Pa", "100.0%"],
+      ["B2058", "300 m³/h", "0.0 °C", "0.0 Pa", "5.0%"],
+      ["B2059", "300 m³/h", "0.0 °C", "25.0 Pa", "50.0%"]
+    ];
+
+    const baseHVAC_B07A = criarBaseHVAC("7A", salasB07A, 4, 1);
+    const baseHVAC_B07B = criarBaseHVAC("7B", salasB07B, 9, 4);
+
+    // BWT 7A - EQUIPAMENTOS INDIVIDUAIS (pH 8.0 a 10.0)
+    const dataBWT_7A_Equipamentos = {
+      "DUOSMOSTIL": {
+        atividades: [
+          "1. Verificar a nível e alimentação dos químicos da máquina (metabissulfito de sódio, hidróxido de sódio e sal)",
+          "2. Verificar funcionamento de todas as bombas e válvulas pneumáticas do sistema",
+          "3. Verificar vazamentos de água em triclamps e juntas",
+          "4. Verificar alimentação de água gelada dos trocadores de calor (manômetros/pressão)"
+        ],
+        params: [
+          ["Condutividade QE218A.6.1", "≤ 1,3 µS/cm (Farmacopeia BR)", "µS/cm"],
+          ["Temperatura TE218A.6.1", "Conforme processo", "°C"],
+          ["ORP QE218A.11.1", "Conforme processo", "mV"],
+          ["pH QE218A.12.1", "8.0 a 10.0", "pH"]
+        ]
+      },
+      "MULTISTILL": {
+        atividades: [
+          "1. Verificar funcionamento de todas as bombas e válvulas pneumáticas do sistema",
+          "2. Verificar vazamentos de água em triclamps e juntas",
+          "3. Verificar alimentação de água gelada dos trocadores de calor (manômetros/pressão)",
+          "4. Verificar alimentação de vapor industrial nos sistemas (manômetros/pressão)"
+        ],
+        params: [
+          ["Condutividade QE438A.4.1", "≤ 1,3 µS/cm", "µS/cm"],
+          ["Temperatura TT438A.4.2", "Conforme processo", "°C"],
+          ["Pressão PT438A.2.1", "Conforme processo", "bar"]
+        ]
+      },
+      "LOOPO": {
+        atividades: [
+          "1. Verificar funcionamento de todas as bombas e válvulas pneumáticas do sistema",
+          "2. Verificar vazamentos de água em triclamps e juntas",
+          "3. Verificar alimentação de água gelada dos trocadores de calor (manômetros/pressão)",
+          "4. Verificar alimentação de vapor industrial nos sistemas (manômetros/pressão)"
+        ],
+        params: [
+          ["Condutividade QE846A.8.1", "≤ 1,3 µS/cm", "µS/cm"],
+          ["Temperatura TE846A.8.1", "Conforme processo", "°C"],
+          ["TOC QE846A.6.1", "≤ 500 ppb", "ppb"],
+          ["Condutividade QE846A.8.2", "≤ 1,3 µS/cm", "µS/cm"],
+          ["Temperatura TE846A.8.2", "Conforme processo", "°C"],
+          ["Temperatura TE561A.2.1", "Conforme processo", "°C"]
+        ]
+      },
+      "VAPOTRON": {
+        atividades: [
+          "1. Verificar funcionamento de todas as bombas e válvulas pneumáticas do sistema",
+          "2. Verificar vazamentos de água em triclamps e juntas",
+          "3. Verificar alimentação de água gelada dos trocadores de calor (manômetros/pressão)",
+          "4. Verificar alimentação de vapor industrial nos sistemas (manômetros/pressão)"
+        ],
+        params: [
+          ["Condutividade QE4366A.4.1", "Conforme especificação", "µS/cm"],
+          ["Temperatura TE436A.4.1", "Conforme especificação", "°C"],
+          ["Pressão PT436A.3.1", "Conforme processo", "bar"]
+        ]
+      },
+      "FILTRO DE CARVÃO ATIVADO": {
+        atividades: [],
+        params: [
+          ["Teor de Cloro Livre - Antes do Filtro", "< 0,1 ppm", "ppm"],
+          ["Teor de Cloro Livre - Após o Filtro", "0,00 ppm", "ppm"]
+        ]
+      }
+    };
+
+    // BWT 7B - EQUIPAMENTOS INDIVIDUAIS (pH 8.0 a 10.0)
+    const dataBWT_7B_Equipamentos = {
+      "OSMOTRON": {
+        atividades: [
+          "1. Verificar a nível e alimentação dos químicos da máquina (metabissulfito de sódio, soda cáustica e sal)",
+          "2. Verificar funcionamento de todas as bombas e válvulas pneumáticas do sistema",
+          "3. Verificar vazamentos de água em triclamps e juntas",
+          "4. Verificar alimentação de água gelada dos trocadores de calor (manômetros/pressão)"
+        ],
+        params: [
+          ["Condutividade QE270A.6.1", "≤ 1,3 µS/cm (Farmacopeia BR)", "µS/cm"],
+          ["Temperatura TE270A.6.1", "Conforme processo", "°C"],
+          ["ORP QE270A.11.1", "Conforme processo", "mV"],
+          ["pH QE270A.12.1", "8.0 a 10.0", "pH"],
+          ["TOC QE270A.10.1", "≤ 500 ppb", "ppb"]
+        ]
+      },
+      "LOOPO PW (845A)": {
+        atividades: [
+          "1. Verificar funcionamento de todas as bombas e válvulas pneumáticas do sistema",
+          "2. Verificar vazamentos de água em triclamps e juntas",
+          "3. Verificar alimentação de água gelada dos trocadores de calor (manômetros/pressão)",
+          "4. Verificar se a ozonização do Loopo PW foi bem-sucedida na lista de alarmes (dia)"
+        ],
+        params: [
+          ["Condutividade QE845A.8.1", "≤ 1,3 µS/cm", "µS/cm"],
+          ["Temperatura TT845A.8.1", "Conforme processo", "°C"],
+          ["TOC QE845A.6.1", "≤ 500 ppb", "ppb"]
+        ]
+      },
+      "MULTISTILL": {
+        atividades: [
+          "1. Verificar funcionamento de todas as bombas e válvulas pneumáticas do sistema",
+          "2. Verificar vazamentos de água em triclamps e juntas",
+          "3. Verificar alimentação de água gelada dos trocadores de calor (manômetros/pressão)",
+          "4. Verificar alimentação de vapor industrial nos sistemas (manômetros/pressão)"
+        ],
+        params: [
+          ["Cond. QE438B.4.1", "≤ 1,3 µS/cm", "µS/cm"],
+          ["Temp. TT438B.4.2", "Conforme processo", "°C"],
+          ["Pressão PT438B.2.1", "Conforme processo", "bar"],
+          ["Temp TT438B.4.3", "Conforme processo", "°C"]
+        ]
+      },
+      "LOOPO WFI (846B)": {
+        atividades: [
+          "1. Verificar funcionamento de todas as bombas e válvulas pneumáticas do sistema",
+          "2. Verificar vazamentos de água em triclamps e juntas",
+          "3. Verificar alimentação de água gelada dos trocadores de calor (manômetros/pressão)",
+          "4. Verificar alimentação de vapor industrial nos sistemas (manômetros/pressão)"
+        ],
+        params: [
+          ["Cond. QE846B.8.11", "≤ 1,3 µS/cm", "µS/cm"],
+          ["Temp. TT846B.7.11", "Conforme processo", "°C"],
+          ["Cond. QE846B.8.1", "≤ 1,3 µS/cm", "µS/cm"],
+          ["Temp TT846B.7.1", "Conforme processo", "°C"],
+          ["TOC QE846B.6.1", "≤ 500 ppb", "ppb"],
+          ["Temp. TE561B.2.1", "Conforme processo", "°C"]
+        ]
+      },
+      "VAPOTRON": {
+        atividades: [
+          "1. Verificar funcionamento de todas as bombas e válvulas pneumáticas do sistema",
+          "2. Verificar vazamentos de água em triclamps e juntas",
+          "3. Verificar alimentação de água gelada dos trocadores de calor (manômetros/pressão)",
+          "4. Verificar alimentação de vapor industrial nos sistemas (manômetros/pressão)"
+        ],
+        params: [
+          ["Condutividade QE436B.4.1", "Conforme especificação", "µS/cm"],
+          ["Temperatura TE438B.4.1", "Conforme especificação", "°C"],
+          ["Pressão PT436B.3.1", "Conforme processo", "bar"]
+        ]
+      },
+      "FILTRO DE CARVÃO ATIVADO": {
+        atividades: [],
+        params: [
+          ["Teor de Cloro Livre - Antes do Filtro", "< 0,1 ppm", "ppm"],
+          ["Teor de Cloro Livre - Após o Filtro", "0,00 ppm", "ppm"]
+        ]
+      }
+    };
+
+    // WWT ITENS
+    const wwtItensChecklist = [
+      "1. Verificar INTEGRIDADE do equipamento",
+      "2. Verificar se existe vazamento em juntas e válvulas",
+      "3. Verificar possíveis vazamentos de produtos químicos",
+      "4. Verificar se não há falhas no sistema",
+      "5. Verificar condições de fixação e suportações",
+      "6. Verificar Ruídos em motores e bombas",
+      "7. Verificar Sistema de Ar comprimido",
+      "8. Verificar estado físico e funcional dos Manômetros e transmissores",
+      "9. Verificar nível de oxigênio do sistema",
+      "10. Verificar nível de efluentes na entrada",
+      "11. Verificar tensão de entrada, se está dentro dos padrões do painel"
+    ];
+
+    // WWT EQUIPAMENTOS
+    const dataWWT_Equipamentos = {
+      "Estação Elevatória (25m³)": null,
+      "Tanque de Equalização (91m³)": null,
+      "Peneira Rotativa": null,
+      "Reator Biológico (Tanque de Aeração)": null,
+      "Tanque de Água Tratada & Filtro Prensa": null,
+      "Inversores, Agitadores & Sopradores": null,
+      "Skids de Dosagem Química": null,
+      "Painéis Elétricos & Automação WWT": null
+    };
+
+    // SALAS ELÉTRICAS - ITENS DA CAPTURA
+    const elecItensCaptura = [
+      "1. Verificar INTEGRIDADE do equipamento",
+      "2. Verificar entrada de tensão, corrente, potência de média",
+      "3. Verificar possíveis falhas nos relés; CLP'S do BMS",
+      "4. Verificar temperatura da sala",
+      "5. Verificar condições de fixação e suportações de infraestrutura",
+      "6. Verificar organização de canaletas internas e organizar desenho e prontuário elétrico dos painéis",
+      "7. Verificar estado das lâmpadas sinaleiras dos painéis",
+      "8. Verificar aterramentos de portas, BEP's e Painéis",
+      "9. Verificar estado de conservação dos EPI's",
+      "10. Verificar Fator de Potência"
+    ];
+
+    // SALAS ELÉTRICAS TÉRREO - ESTRUTURA POR SALA E EQUIPAMENTO
+    const dataElec_Terreo_Grouped = {
+      "Sala 1041 (B07A)": [
+        "CÚBICULOS DE MÉDIA 7A-13-NO-QMT-0-001",
+        "TRAFOS 2,5 MVA-13,8 KV/380V (7A)",
+        "TRAFO 112,5 KVA 7A-3-E-TR",
+        "TRAFO 150 KVA 7A-3-NO-TR",
+        "CÚBICULOS BAIXA TENSÃO 7A-3-NO-QGBT",
+        "BANCO DE CAPACIDORES 300 KVAR (7A)",
+        "CÚBICULOS 7A-3-E-CCM",
+        "CÚBICULOS 7A-2-NO-QFG / 7A-3-NO-CCM / 7A-2-E-QFG",
+        "PAINEL DE TOMADAS INDUSTRIAIS E ILUMINAÇÃO (7A)"
+      ],
+      "Sala 1033 (B07B)": [
+        "CÚBICULOS DE MÉDIA 7B-13-NO-QMT-0-001",
+        "TRAFOS 2,5 MVA-13,8 KV/380V (7B)",
+        "TRAFO 112,5 KVA 7B-3-NO-TR-0-001",
+        "TRAFO 150 KVA 7B-3-E-TR-0-001",
+        "CÚBICULOS BAIXA TENSÃO 7B-3-NO-QGBT-0-001",
+        "BANCO DE CAPACIDORES 300 KVAR (7B)",
+        "CÚBICULOS 7B-3-E-CCM-0-001",
+        "CÚBICULOS 7B-2-NO-QFG / 7B-2-E-QFG",
+        "PAINEL DE TOMADAS INDUSTRIAIS E ILUMINAÇÃO (7B)"
+      ]
+    };
+
+    // SALAS ELÉTRICAS PISO 3 - ESTRUTURA POR SALA E EQUIPAMENTO
+    const dataElec_Piso3_Grouped = {
+      "Sala 3003 (B07A)": [
+        "CÚBICULOS DE BAIXA 7A-3-E-CCMAC-2-001",
+        "CÚBICULOS DE BAIXA 7A-3-NO-CCMAC-2-001",
+        "NOBREACK 500 KVA 7A-3-U-UPS-2-001",
+        "CÚBICULOS QGUPS (7A-2-U / 7A-3-U)",
+        "CÚBICULOS BAIXA TENSÃO QGBT-0-001 (7A)",
+        "TRAFO 400 KVA 380-380/220VCA (7A)",
+        "TRAFO 112 KVA 380-220/127VCA (7A)",
+        "PAINÉIS DE TOMADAS INDUSTRIAIS E ILUMINAÇÃO (7A)"
+      ],
+      "Sala 3011 (B07B)": [
+        "CÚBICULOS DE BAIXA 7B-3-E-CCMAC-2-001",
+        "CÚBICULOS DE BAIXA 7B-3-NO-CCMAC-2-001",
+        "NOBREACK 500 KVA 7B-3-U-UPS-2-001",
+        "CÚBICULOS QGUPS 7B-3-U-QGUPS-2-001",
+        "CÚBICULOS BAIXA TENSÃO QGBT-0-001 (7B)",
+        "TRAFO 150 KVA 380/220VCA (7B)",
+        "TRAFO 112 KVA 380-220/127VCA (7B)",
+        "PAINÉIS DE TOMADAS INDUSTRIAIS E ILUMINAÇÃO (7B)"
+      ]
+    };
+
+    // GERADORES 7F
+    const generatorItensCaptura = [
+      "1. Verificar INTEGRIDADE do equipamento",
+      "2. Verificar o funcionamento geral do Gerador",
+      "3. Verificar se não há falhas no sistema",
+      "4. Verificar condições de fixação e suportações",
+      "5. Verificar organização de canaletas internas e organizar desenho elétrico",
+      "6. Verificar nível de óleo diesel",
+      "7. Verificar o indicador de restrição do filtro de ar (se instalado), se o indicador de serviço indicar vermelho, substitua os elementos do filtro de ar.",
+      "8. Verificar o sistema de admissão de ar quanto a fugas: inspecionar visualmente o sistema de admissão de ar quanto a indícios de desgaste ou danos.",
+      "9. Verificar o fluido de refrigeração dos radiadores",
+      "10. Verificar se há indícios de desgastes nas correias (patinação na hora de entrada do gerador), verificar visualmente tensão das correias."
+    ];
+
+    const dataGenerators = {
+      "Visão Geral dos Geradores 7F": null,
+      "GERADOR GEN 1": null,
+      "GERADOR GEN 2": null,
+      "BOMBA DE RECIRCULAÇÃO": null,
+      "INVERSOR": null,
+      "TANQUE DE DIESEL": null,
+      "RESISTOR DE ATERRAMENTO": null
+    };
+
+    // SISTEMA DE VAPOR Nº 2 (Form Nº 227)
+    const steamItensCaptura = [
+      "1. Verificar residual (%) do COLOMETRY",
+      "2. Verificar nível de tanque de salmoura, e abastecer caso necessário",
+      "3. Limpeza do filtro de descarga de fundo",
+      "4. Verificar alimentação de gás e skid de valvulas(pressão entre 200 a 340 mbar) , fogo baixo e alto(sem alarme=ok; alarmando=ok)",
+      "5. Verificar a pressão de vapor(5 - 8 bar)",
+      "6. Verificar a alimentação química dos pontos de dosagem",
+      "7. Testar a funcionalidade da válvula PSV",
+      "8. Verificar pressão de alimentação de água industrial- Pressão<71 PSI(5 kgf/cm²)",
+      "9. Verificar filtro dos exaustores caldeira",
+      "10. Verificar se existe vazamento em juntas e válvulas do sistema de vapor",
+      "11. Realizar dreno linha de condensado próximo aos SKIDs de vapor",
+      "12. O estado físico e funcional dos Manômetros; transmissores e purgadores",
+      "13. Verificação de PSV's dos Skids de vapor médio e alto",
+      "14. Verificação das bombas de condensado do 7 A e 7B(vazamento, purga,funcionalidade)"
+    ];
+
+    const steamAplicabilidade = {
+      "ABRANDADOR": [1],
+      "CALDEIRA 2": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+      "CALDEIRA 3": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+      "DESAERADOR": [4, 6, 9, 11, 12],
+      "SKID VAPOR B. 7A/7B e Bomba condensado": [4, 6, 9, 10, 11, 12, 13]
+    };
+
+    const dataSteam2 = {
+      "Visão Geral do Sistema de Vapor": null,
+      "CALDEIRA 2": null,
+      "CALDEIRA 3": null,
+      "ABRANDADOR": null,
+      "DESAERADOR": null,
+      "SKID VAPOR B. 7A/7B e Bomba condensado": null,
+      "BLOWDOWN / ANOMALIAS & OUTRAS ANOTAÇÕES": null
+    };
+
+    // B14 ITENS
+    const b14Itens = [
+      "1. Filtração - Pressão Entrada/Saída Filtro BAG FB 0001",
+      "2. Filtração - Pressão Entrada/Saída Filtro BAG FB 0002",
+      "3. Filtração - Pressão Entrada/Saída Filtro Zeólita FA-0008",
+      "4. Filtração - Pressão Entrada/Saída Filtro Zeólita FA-0009",
+      "5. Cloração - Status de Operação da Bomba BC-0004",
+      "6. Cloração - Controlador de Dosagem de Cloro e Alarmes",
+      "7. Cloração - Vazão no Rotâmetro (Padrão: 10 GPH)",
+      "8. Cloração - Nível Solução Hipoclorito (Recarregar se < 30L)",
+      "9. Cloração - Teste Nível Cloro Saída (WC B12)",
+      "10. Cloração - Teste Nível Cloro Saída (Poste B14)",
+      "11. Incêndio - Pressão Manômetro Bomba Jockey",
+      "12. Incêndio - Pressão Manômetro Bomba Diesel",
+      "13. Incêndio - Pressão Manômetro Bomba Elétrica",
+      "14. Incêndio - Status Bombas Jockey/Diesel/Elétrica (Manual/Auto/OFF)",
+      "15. Drenagem Fosso - Boia e Operação da Bomba do Fosso",
+      "16. Ar Comprimido - Status e Pressão do Compressor"
+    ];
+
+    const modulosConfig = {
+      "HVAC_B07A": { titulo: "1. Monitoramento HVAC B07A - 1º Piso", temSubitem: true, isBWT: false, isElec: false, data: baseHVAC_B07A },
+      "HVAC_B07B": { titulo: "2. Monitoramento HVAC B07B", temSubitem: true, isBWT: false, isElec: false, data: baseHVAC_B07B },
+      "HVAC_ROUTINE": {
+        titulo: "3. Check-list Diário HVAC B07", temSubitem: false, isBWT: false, isElec: false,
+        items: [
+          "1. Verificar falhas/alarme no supervisório", "2. Verificar temperaturas das salas via supervisório",
+          "3. Verificar bombas dos Chillers (óleo/ruído/vazamentos)", "4. Verificar Chillers em campo (entr/saída temp/pressão)",
+          "5. Verificar funcionamento das AHUs (correias/filtros/dreno)", "6. Verificar funcionamento dos Exaustores",
+          "7. Verificar funcionamento das CRUs (alarmes/temp/pressão sucção-descarga)"
+        ]
+      },
+      "BWT_7A": { titulo: "4. Tratamento de Água BWT 7A", temSubitem: true, isBWT: true, isElec: false, data: dataBWT_7A_Equipamentos },
+      "BWT_7B": { titulo: "5. Tratamento de Água BWT 7B", temSubitem: true, isBWT: true, isElec: false, data: dataBWT_7B_Equipamentos },
+      "WWT": {
+        titulo: "6. Estação de Tratamento de Efluentes WWT (Terça e Quinta)", temSubitem: true, isBWT: false, isElec: false,
+        data: dataWWT_Equipamentos, items: wwtItensChecklist
+      },
+      "SKIDS_B07": {
+        titulo: "7. Skids Dosadores e Insumos Químicos B07", temSubitem: false, isBWT: false, isElec: false,
+        items: ["CAG-7A", "PROCESSO 7A", "HVAC-7A/7B", "TORRE 7A", "CAG 7B", "PROCESSO 7B", "ÁGUA GELADA 7B", "TORRE 7B"]
+      },
+      "STEAM_2": {
+        titulo: "8. Inspeção Diária Sistema de Vapor Nº 2 (Ref. Form Nº 227 - Caldeiras 2/3, Abrandador, Desaerador, Skids, Blowdown)",
+        temSubitem: true, isBWT: false, isElec: false, isSteam: true,
+        data: dataSteam2, items: steamItensCaptura
+      },
+      "GENERATORS": {
+        titulo: "9. Inspeção de Geradores 7F (Ref. Captura 151753 - GEN 1, GEN 2, Bomba, Inversor, Tanque, Resistor)",
+        temSubitem: true, isBWT: false, isElec: true,
+        data: dataGenerators, items: generatorItensCaptura
+      },
+      "ELEC_GROUND": {
+        titulo: "10. Salas Elétricas Térreo (Dividido por Sala e Equipamento)",
+        temSubitem: true, isBWT: false, isElec: true, isGroupedElec: true,
+        dataGrouped: dataElec_Terreo_Grouped, items: elecItensCaptura
+      },
+      "ELEC_PISO3": {
+        titulo: "11. Salas Elétricas Piso 3 (Dividido por Sala e Equipamento)",
+        temSubitem: true, isBWT: false, isElec: true, isGroupedElec: true,
+        dataGrouped: dataElec_Piso3_Grouped, items: elecItensCaptura
+      },
+      "B14": {
+        titulo: "12. Rotina Diária B14 (Filtração, Cloração, Incêndio, Drenagem, Ar Comprimido)",
+        temSubitem: false, isBWT: false, isElec: false,
+        items: b14Itens
+      }
+    };
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const now = new Date();
+      now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+      document.getElementById('data').value = now.toISOString().slice(0, 16);
+      carregarHistoricoStorage();
+    });
+
+    function alternarModulo() {
+      const modKey = document.getElementById('modulo').value;
+      const secao = document.getElementById('secao-dinamica');
+      if (!modKey || !modulosConfig[modKey]) { secao.style.display = 'none'; return; }
+
+      const cfg = modulosConfig[modKey];
+      document.getElementById('titulo-modulo').textContent = cfg.titulo;
+      secao.style.display = 'block';
+
+      const subContainer = document.getElementById('container-subitem');
+      const subSelect = document.getElementById('subitem-select');
+      
+      if (cfg.temSubitem) {
+        subContainer.style.display = 'block';
+        subSelect.innerHTML = '<option value="">-- Selecione o Equipamento / Sub-sistema / Painel --</option>';
+
+        if (cfg.isGroupedElec && cfg.dataGrouped) {
+          Object.keys(cfg.dataGrouped).forEach(nomeSala => {
+            const group = document.createElement('optgroup');
+            group.label = `📍 ${nomeSala}`;
+            cfg.dataGrouped[nomeSala].forEach(equip => {
+              const opt = document.createElement('option');
+              opt.value = `${nomeSala} | ${equip}`;
+              opt.textContent = `${equip}`;
+              group.appendChild(opt);
+            });
+            subSelect.appendChild(group);
+          });
+        } else if (cfg.data) {
+          Object.keys(cfg.data).forEach(k => {
+            const opt = document.createElement('option');
+            opt.value = k;
+            opt.textContent = k.startsWith("A20") || k.startsWith("B10") || k.startsWith("B20") ? `Sala ${k}` : k;
+            subSelect.appendChild(opt);
+          });
+        }
+      } else { 
+        subContainer.style.display = 'none'; 
+      }
+
+      renderizarTabela(cfg);
+    }
+
+    function carregarSubitemSetpoints() {
+      const modKey = document.getElementById('modulo').value;
+      const subKey = document.getElementById('subitem-select').value;
+      const cfg = modulosConfig[modKey];
+
+      renderizarTabela(cfg, subKey);
+
+      if (cfg && cfg.temSubitem && !cfg.isBWT && !cfg.isElec && !cfg.isSteam && cfg.data && cfg.data[subKey]) {
+        const [p1, p2, p3, p4] = cfg.data[subKey];
+        if (document.getElementById('sp-param1')) document.getElementById('sp-param1').value = p1;
+        if (document.getElementById('sp-param2')) document.getElementById('sp-param2').value = p2;
+        if (document.getElementById('sp-param3')) document.getElementById('sp-param3').value = p3;
+        if (document.getElementById('sp-param4')) document.getElementById('sp-param4').value = p4;
+      }
+    }
+
+    function renderizarTabela(cfg, selectedItem = "") {
+      const thead = document.getElementById('thead-parametros');
+      const tbody = document.getElementById('tbody-parametros');
+      const containerQuant = document.getElementById('container-parametros-quantitativos');
+      const rowQuant = document.getElementById('row-campos-quantitativos');
+      
+      thead.innerHTML = ""; tbody.innerHTML = "";
+      containerQuant.style.display = "none";
+      rowQuant.innerHTML = "";
+
+      if (cfg.isBWT) {
+        if (!selectedItem) {
+          thead.innerHTML = '<tr><th>Selecione um Equipamento acima para exibir seus itens de inspeção e parâmetros</th></tr>';
+          return;
+        }
+
+        const equipData = cfg.data[selectedItem] || { atividades: [], params: [] };
+        let htmlRows = "";
+
+        if (equipData.atividades && equipData.atividades.length > 0) {
+          htmlRows += `
+            <tr>
+              <th colspan="3" class="section-header-th">📋 Atividades de Inspeção Operacional (${selectedItem})</th>
+            </tr>
+            <tr style="background:#f8f9fa;">
+              <th>Item de Inspeção</th>
+              <th>Status / Resultado</th>
+              <th>Observação Local</th>
+            </tr>
+          `;
+          equipData.atividades.forEach((itemText, idx) => {
+            htmlRows += `
+              <tr>
+                <td><strong>${itemText}</strong></td>
+                <td>
+                  <select id="val-bwt-act-${idx}">
+                    <option value="Conforme / OK">Conforme / OK</option>
+                    <option value="Não Conforme / NOK">Não Conforme / NOK</option>
+                    <option value="N/A">N/A</option>
+                  </select>
+                </td>
+                <td><input type="text" id="obs-bwt-act-${idx}" placeholder="Obs. local do item"></td>
+              </tr>
+            `;
+          });
+        }
+
+        if (equipData.params && equipData.params.length > 0) {
+          htmlRows += `
+            <tr>
+              <th colspan="5" class="section-header-th">📊 Parâmetros e Qualidade da Água (${selectedItem})</th>
+            </tr>
+            <tr style="background:#f8f9fa;">
+              <th>Parâmetro / Tag Sensor</th>
+              <th>Setpoint / Limite</th>
+              <th>Valor Lido</th>
+              <th>Unid.</th>
+              <th>Observação Local</th>
+            </tr>
+          `;
+          equipData.params.forEach(([paramTag, limit, unid], idx) => {
+            htmlRows += `
+              <tr>
+                <td><strong>${paramTag}</strong></td>
+                <td><input type="text" value="${limit}" readonly class="readonly-input"></td>
+                <td><input type="text" id="lido-bwt-param-${idx}" placeholder="Valor lido"></td>
+                <td>${unid}</td>
+                <td><input type="text" id="obs-bwt-param-${idx}" placeholder="Obs. do parâmetro"></td>
+              </tr>
+            `;
+          });
+        }
+
+        tbody.innerHTML = htmlRows;
+
+      } else if (cfg.isSteam) {
+        if (selectedItem === "CALDEIRA 2" || selectedItem === "CALDEIRA 3") {
+          containerQuant.style.display = "block";
+          const condutRef = selectedItem === "CALDEIRA 2" ? "4100" : "5800";
+          rowQuant.innerHTML = `
+            <div class="form-group"><label>Pressão de Água (kgf/cm² - Ref < 5 kgf/cm² / 71 PSI):</label><input type="text" id="steam-p-agua" placeholder="Ex: 3.5"></div>
+            <div class="form-group"><label>Condutividade (µS/cm - Ref ${condutRef}):</label><input type="text" id="steam-condut" placeholder="Ex: ${condutRef}"></div>
+            <div class="form-group"><label>Dureza (ppm - Ref 0 ppm):</label><input type="text" id="steam-dureza" placeholder="Ex: 0"></div>
+            <div class="form-group"><label>Temp. TQ Água (°C):</label><input type="text" id="steam-temp-tq" placeholder="Ex: 85"></div>
+          `;
+        } else if (selectedItem.includes("BLOWDOWN")) {
+          containerQuant.style.display = "block";
+          rowQuant.innerHTML = `
+            <div class="form-group"><label>Temperatura do Blowdown (°C):</label><input type="text" id="steam-temp-blowdown" placeholder="Ex: 95"></div>
+            <div class="form-group"><label>Tag/EAM e Ordem de Anomalia:</label><input type="text" id="steam-eam-tag" placeholder="Ex: EAM-10492 / Ordem 4029"></div>
+            <div class="form-group"><label>H/H Necessário e Material:</label><input type="text" id="steam-hh-mat" placeholder="Ex: 2 H/H - Reparo Junta"></div>
+          `;
+        }
+
+        thead.innerHTML = '<tr><th>Item de Inspeção (Formulário Nº 227)</th><th>Aplicabilidade / Status</th><th>Observação Local</th></tr>';
+        
+        const aplicaveis = steamAplicabilidade[selectedItem] || null;
+
+        cfg.items.forEach((itemText, idx) => {
+          const isAplicavel = !aplicaveis || aplicaveis.includes(idx);
+          const tr = document.createElement('tr');
+          if (!isAplicavel) tr.className = 'na-row';
+
+          tr.innerHTML = `
+            <td><strong>${itemText}</strong> ${!isAplicavel ? '<small style="color:#777;">(N/A para este equipamento no Form 227)</small>' : ''}</td>
+            <td>
+              <select id="val-check-${idx}">
+                <option value="${isAplicavel ? 'Conforme / OK (1)' : 'N/A'}" ${!isAplicavel ? 'selected' : ''}>${isAplicavel ? 'Conforme / OK (1)' : 'N/A (Célula Cinza)'}</option>
+                <option value="Não Conforme / NOK (2)">Não Conforme / NOK (2)</option>
+                ${isAplicavel ? '<option value="N/A">N/A</option>' : ''}
+              </select>
+            </td>
+            <td><input type="text" id="obs-check-${idx}" placeholder="${isAplicavel ? 'Digite observações do item' : 'N/A'}" ${!isAplicavel ? 'disabled' : ''}></td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+      } else if (cfg.isElec) {
+        if (cfg.temSubitem && !selectedItem) {
+          thead.innerHTML = '<tr><th>Selecione a Sala e o Equipamento acima para exibir seus itens de inspeção</th></tr>';
+          tbody.innerHTML = '';
+          return;
+        }
+
+        thead.innerHTML = '<tr><th>Item de Inspeção Elétrica</th><th>Status / Resultado</th><th>Observação Local</th></tr>';
+        cfg.items.forEach((itemText, idx) => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td><strong>${itemText}</strong></td>
+            <td>
+              <select id="val-check-${idx}">
+                <option value="Conforme / OK">Conforme / OK</option>
+                <option value="Não Conforme / NOK">Não Conforme / NOK</option>
+                <option value="N/A">N/A</option>
+              </select>
+            </td>
+            <td><input type="text" id="obs-check-${idx}" placeholder="Digite observações do item"></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } else if (cfg.items && cfg.temSubitem) {
+        if (!selectedItem) {
+          thead.innerHTML = '<tr><th>Selecione o Equipamento acima para exibir seus itens de inspeção</th></tr>';
+          tbody.innerHTML = '';
+          return;
+        }
+
+        thead.innerHTML = '<tr><th>Item de Inspeção WWT</th><th>Status / Resultado</th><th>Observação Local</th></tr>';
+        cfg.items.forEach((itemText, idx) => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td><strong>${itemText}</strong></td>
+            <td>
+              <select id="val-check-${idx}">
+                <option value="Conforme / OK">Conforme / OK</option>
+                <option value="Não Conforme / NOK">Não Conforme / NOK</option>
+                <option value="N/A">N/A</option>
+              </select>
+            </td>
+            <td><input type="text" id="obs-check-${idx}" placeholder="Digite observações do item"></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } else if (cfg.temSubitem) {
+        const isCRU = selectedItem.startsWith("CRU-");
+        thead.innerHTML = '<tr><th>Parâmetro</th><th>Setpoint</th><th>Valor Lido</th><th>Unid.</th><th>Observação Local</th></tr>';
+        
+        if (isCRU) {
+          tbody.innerHTML = `
+            <tr><td><strong>Pressão de Sucção</strong></td><td><input type="text" id="sp-param1" readonly class="readonly-input"></td><td><input type="text" id="lido-param1" placeholder="Ex: 2.1"></td><td>psi</td><td><input type="text" id="obs-param1" placeholder="Obs local"></td></tr>
+            <tr><td><strong>Temperatura</strong></td><td><input type="text" id="sp-param2" readonly class="readonly-input"></td><td><input type="text" id="lido-param2" placeholder="Ex: 5.0"></td><td>°C</td><td><input type="text" id="obs-param2" placeholder="Obs local"></td></tr>
+            <tr><td><strong>Pressão de Descarga</strong></td><td><input type="text" id="sp-param3" readonly class="readonly-input"></td><td><input type="text" id="lido-param3" placeholder="Ex: 13.2"></td><td>psi</td><td><input type="text" id="obs-param3" placeholder="Obs local"></td></tr>
+            <tr><td><strong>Superaquec. Compressor</strong></td><td><input type="text" id="sp-param4" readonly class="readonly-input"></td><td><input type="text" id="lido-param4" placeholder="Ex: 15.0"></td><td>°C</td><td><input type="text" id="obs-param4" placeholder="Obs local"></td></tr>
+          `;
+        } else {
+          tbody.innerHTML = `
+            <tr><td><strong>Vazão de Ar</strong></td><td><input type="text" id="sp-param1" readonly class="readonly-input"></td><td><input type="text" id="lido-param1" placeholder="Ex: 2500"></td><td>m³/h</td><td><input type="text" id="obs-param1" placeholder="Obs local"></td></tr>
+            <tr><td><strong>Temperatura</strong></td><td><input type="text" id="sp-param2" readonly class="readonly-input"></td><td><input type="text" id="lido-param2" placeholder="Ex: 20.0"></td><td>°C</td><td><input type="text" id="obs-param2" placeholder="Obs local"></td></tr>
+            <tr><td><strong>Pressão Diferencial</strong></td><td><input type="text" id="sp-param3" readonly class="readonly-input"></td><td><input type="text" id="lido-param3" placeholder="Ex: 25.0"></td><td>Pa/bar</td><td><input type="text" id="obs-param3" placeholder="Obs local"></td></tr>
+            <tr><td><strong>Válvula / Umidade</strong></td><td><input type="text" id="sp-param4" readonly class="readonly-input"></td><td><input type="text" id="lido-param4" placeholder="Ex: 73.8"></td><td>%|g/m³</td><td><input type="text" id="obs-param4" placeholder="Obs local"></td></tr>
+          `;
+        }
+      } else {
+        thead.innerHTML = '<tr><th>Item de Inspeção</th><th>Status / Resultado</th><th>Observação Local</th></tr>';
+        cfg.items.forEach((itemText, idx) => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td><strong>${itemText}</strong></td>
+            <td>
+              <select id="val-check-${idx}">
+                <option value="Conforme / OK">Conforme / OK</option>
+                <option value="Não Conforme / NOK">Não Conforme / NOK</option>
+                <option value="N/A">N/A</option>
+              </select>
+            </td>
+            <td><input type="text" id="obs-check-${idx}" placeholder="Digite observações do item"></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+    }
+
+    function salvarLeitura() {
+      const operador = document.getElementById('operador').value;
+      const empresa = document.getElementById('empresa').value;
+      const rawData = document.getElementById('data').value;
+      const modKey = document.getElementById('modulo').value;
+
+      if (!operador || !empresa || !rawData || !modKey) { 
+        alert("Preencha todos os campos obrigatórios (Operador, Empresa, Data e Hora e Módulo)."); 
+        return; 
+      }
+
+      const dataFormatada = rawData.replace("T", " ");
+      const cfg = modulosConfig[modKey];
+      let detalheItem = cfg.titulo;
+      let itensDetalhados = [];
+
+      if (cfg.isBWT) {
+        const subKey = document.getElementById('subitem-select').value;
+        if (!subKey) { alert("Selecione o Equipamento ou Seção do BWT."); return; }
+        detalheItem += ` - ${subKey}`;
+
+        const equipData = cfg.data[subKey] || { atividades: [], params: [] };
+
+        if (equipData.atividades && equipData.atividades.length > 0) {
+          itensDetalhados.push(`• ATIVIDADES DE INSPEÇÃO (${subKey}):`);
+          equipData.atividades.forEach((itemText, idx) => {
+            const val = document.getElementById(`val-bwt-act-${idx}`)?.value || "N/A";
+            const obs = document.getElementById(`obs-bwt-act-${idx}`)?.value;
+            let text = `  ${idx + 1}. ${itemText}: ${val}`;
+            if (obs && obs.trim() !== "") { text += ` — Obs: ${obs.trim()}`; }
+            itensDetalhados.push(text);
+          });
+        }
+
+        if (equipData.params && equipData.params.length > 0) {
+          itensDetalhados.push(`• PARÂMETROS DE QUALIDADE DA ÁGUA (${subKey}):`);
+          equipData.params.forEach(([paramTag, limit, unid], idx) => {
+            const val = document.getElementById(`lido-bwt-param-${idx}`)?.value || "N/I";
+            const obs = document.getElementById(`obs-bwt-param-${idx}`)?.value;
+            let text = `  • ${paramTag}: ${val} ${unid} (Limite: ${limit})`;
+            if (obs && obs.trim() !== "") { text += ` — Obs: ${obs.trim()}`; }
+            itensDetalhados.push(text);
+          });
+        }
+
+      } else if (cfg.isSteam) {
+        const subKey = document.getElementById('subitem-select').value;
+        if (subKey) { detalheItem += ` - ${subKey}`; }
+
+        const pAgua = document.getElementById('steam-p-agua')?.value;
+        const condut = document.getElementById('steam-condut')?.value;
+        const dureza = document.getElementById('steam-dureza')?.value;
+        const tempTQ = document.getElementById('steam-temp-tq')?.value;
+        const tempBlow = document.getElementById('steam-temp-blowdown')?.value;
+        const eamTag = document.getElementById('steam-eam-tag')?.value;
+        const hhMat = document.getElementById('steam-hh-mat')?.value;
+
+        if (pAgua || condut || dureza || tempTQ) {
+          itensDetalhados.push("• PARÂMETROS OPERACIONAIS / QUÍMICOS:");
+          if (pAgua) itensDetalhados.push(`  - Pressão de Água: ${pAgua} kgf/cm²`);
+          if (condut) itensDetalhados.push(`  - Condutividade: ${condut} µS/cm`);
+          if (dureza) itensDetalhados.push(`  - Dureza: ${dureza} ppm`);
+          if (tempTQ) itensDetalhados.push(`  - Temp. TQ Água: ${tempTQ} °C`);
+        }
+        if (tempBlow || eamTag || hhMat) {
+          itensDetalhados.push("• BLOWDOWN & REGISTRO DE ANOMALIAS:");
+          if (tempBlow) itensDetalhados.push(`  - Temp. Blowdown: ${tempBlow} °C`);
+          if (eamTag) itensDetalhados.push(`  - EAM/TAG & Ordem: ${eamTag}`);
+          if (hhMat) itensDetalhados.push(`  - H/H & Material: ${hhMat}`);
+        }
+
+        itensDetalhados.push("• CHECKLIST DIÁRIO OPERACIONAL (Form Nº 227):");
+        cfg.items.forEach((itemText, idx) => {
+          const val = document.getElementById(`val-check-${idx}`)?.value || "N/A";
+          const obs = document.getElementById(`obs-check-${idx}`)?.value;
+          let text = `  ${idx + 1}. ${itemText}: ${val}`;
+          if (obs && obs.trim() !== "") { text += ` — Obs: ${obs.trim()}`; }
+          itensDetalhados.push(text);
+        });
+
+      } else if (cfg.isElec) {
+        const subKey = document.getElementById('subitem-select').value;
+        if (cfg.temSubitem && !subKey) { alert("Selecione a Sala e o Equipamento Elétrico."); return; }
+        if (subKey) { detalheItem += ` - ${subKey}`; }
+
+        cfg.items.forEach((itemText, idx) => {
+          const val = document.getElementById(`val-check-${idx}`)?.value || "N/A";
+          const obs = document.getElementById(`obs-check-${idx}`)?.value;
+          let text = `${idx + 1}. ${itemText}: ${val}`;
+          if (obs && obs.trim() !== "") { text += ` — Obs: ${obs.trim()}`; }
+          itensDetalhados.push(text);
+        });
+      } else if (cfg.items && cfg.temSubitem) {
+        const subKey = document.getElementById('subitem-select').value;
+        if (!subKey) { alert("Selecione o Equipamento."); return; }
+        detalheItem += ` - ${subKey}`;
+
+        cfg.items.forEach((itemText, idx) => {
+          const val = document.getElementById(`val-check-${idx}`)?.value || "N/A";
+          const obs = document.getElementById(`obs-check-${idx}`)?.value;
+          let text = `${idx + 1}. ${itemText}: ${val}`;
+          if (obs && obs.trim() !== "") { text += ` — Obs: ${obs.trim()}`; }
+          itensDetalhados.push(text);
+        });
+      } else if (cfg.temSubitem) {
+        const subKey = document.getElementById('subitem-select').value;
+        if (!subKey) { alert("Selecione o Equipamento ou Sala."); return; }
+        
+        detalheItem += ` - ${subKey}`;
+        const isCRU = subKey.startsWith("CRU-");
+        
+        const p1 = document.getElementById('lido-param1')?.value || "N/I";
+        const o1 = document.getElementById('obs-param1')?.value;
+        const p2 = document.getElementById('lido-param2')?.value || "N/I";
+        const o2 = document.getElementById('obs-param2')?.value;
+        const p3 = document.getElementById('lido-param3')?.value || "N/I";
+        const o3 = document.getElementById('obs-param3')?.value;
+        const p4 = document.getElementById('lido-param4')?.value || "N/I";
+        const o4 = document.getElementById('obs-param4')?.value;
+
+        if (isCRU) {
+          itensDetalhados.push(`• Pressão de Sucção: ${p1} psi${o1 && o1.trim() ? ' — Obs: ' + o1.trim() : ''}`);
+          itensDetalhados.push(`• Temperatura: ${p2} °C${o2 && o2.trim() ? ' — Obs: ' + o2.trim() : ''}`);
+          itensDetalhados.push(`• Pressão de Descarga: ${p3} psi${o3 && o3.trim() ? ' — Obs: ' + o3.trim() : ''}`);
+          itensDetalhados.push(`• Superaquecimento Compressor: ${p4} °C${o4 && o4.trim() ? ' — Obs: ' + o4.trim() : ''}`);
+        } else {
+          itensDetalhados.push(`• Vazão de Ar: ${p1} m³/h${o1 && o1.trim() ? ' — Obs: ' + o1.trim() : ''}`);
+          itensDetalhados.push(`• Temperatura: ${p2} °C${o2 && o2.trim() ? ' — Obs: ' + o2.trim() : ''}`);
+          itensDetalhados.push(`• Pressão Diferencial: ${p3} Pa${o3 && o3.trim() ? ' — Obs: ' + o3.trim() : ''}`);
+          itensDetalhados.push(`• Válvula / Umidade: ${p4}${o4 && o4.trim() ? ' — Obs: ' + o4.trim() : ''}`);
+        }
+      } else {
+        cfg.items.forEach((itemText, idx) => {
+          const val = document.getElementById(`val-check-${idx}`)?.value || "N/A";
+          const obs = document.getElementById(`obs-check-${idx}`)?.value;
+          let text = `${itemText}: ${val}`;
+          if (obs && obs.trim() !== "") { text += ` — Obs: ${obs.trim()}`; }
+          itensDetalhados.push(text);
+        });
+      }
+
+      const obsGeral = document.getElementById('observacoes-leitura').value || "-";
+      const resumoValores = itensDetalhados.join("\n");
+
+      const reg = {
+        id: Date.now(), 
+        data: dataFormatada, 
+        operador, 
+        empresa, 
+        moduloKey: modKey,
+        item: detalheItem, 
+        resumo: resumoValores,
+        obs: obsGeral
+      };
+
+      leituras.unshift(reg);
+      salvarNoStorage();
+      aplicarFiltros();
+      alert("Registro salvo com sucesso!");
+    }
+
+    function alternarPeriodoData() {
+      const periodo = document.getElementById('filtro-periodo').value;
+      const customDiv = document.getElementById('container-datas-custom');
+      if (periodo === 'CUSTOM') {
+        customDiv.style.display = 'flex';
+      } else {
+        customDiv.style.display = 'none';
+      }
+      aplicarFiltros();
+    }
+
+    function aplicarFiltros() {
+      const filtroChecklistSelect = document.getElementById('filtro-checklist');
+      const filtroChecklist = filtroChecklistSelect.value;
+      const checklistText = filtroChecklistSelect.options[filtroChecklistSelect.selectedIndex].text;
+
+      const filtroPeriodoSelect = document.getElementById('filtro-periodo');
+      const filtroPeriodo = filtroPeriodoSelect.value;
+      let periodoText = filtroPeriodoSelect.options[filtroPeriodoSelect.selectedIndex].text;
+
+      const dataInicioStr = document.getElementById('filtro-data-inicio').value;
+      const dataFimStr = document.getElementById('filtro-data-fim').value;
+
+      if (filtroPeriodo === 'CUSTOM') {
+        periodoText = `Personalizado (${dataInicioStr || 'Início'} até ${dataFimStr || 'Fim'})`;
+      }
+
+      const hoje = new Date();
+      hoje.setHours(0,0,0,0);
+
+      leiturasExibidas = leituras.filter(reg => {
+        if (filtroChecklist !== "TODOS") {
+          if (reg.moduloKey) {
+            if (reg.moduloKey !== filtroChecklist) return false;
+          } else {
+            const tituloCfg = modulosConfig[filtroChecklist]?.titulo || "";
+            if (!reg.item.includes(tituloCfg) && !reg.item.includes(filtroChecklist)) return false;
+          }
+        }
+
+        if (!reg.data) return true;
+        const regDate = new Date(reg.data.replace(" ", "T"));
+
+        if (filtroPeriodo === "HOJE") {
+          const dReg = new Date(regDate); dReg.setHours(0,0,0,0);
+          if (dReg.getTime() !== hoje.getTime()) return false;
+        } else if (filtroPeriodo === "SEMANA") {
+          const seteDiasAtras = new Date(hoje);
+          seteDiasAtras.setDate(hoje.getDate() - 7);
+          if (regDate < seteDiasAtras) return false;
+        } else if (filtroPeriodo === "MES") {
+          if (regDate.getMonth() !== hoje.getMonth() || regDate.getFullYear() !== hoje.getFullYear()) return false;
+        } else if (filtroPeriodo === "CUSTOM") {
+          if (dataInicioStr) {
+            const dInicio = new Date(dataInicioStr + "T00:00:00");
+            if (regDate < dInicio) return false;
+          }
+          if (dataFimStr) {
+            const dFim = new Date(dataFimStr + "T23:59:59");
+            if (regDate > dFim) return false;
+          }
+        }
+
+        return true;
+      });
+
+      document.getElementById('summary-checklist-text').textContent = checklistText;
+      document.getElementById('summary-periodo-text').textContent = periodoText;
+      document.getElementById('summary-count-text').textContent = `${leiturasExibidas.length} registros`;
+
+      renderizarHistorico(leiturasExibidas);
+    }
+
+    function salvarNoStorage() { 
+      try { 
+        localStorage.setItem(CHAVE_STORAGE, JSON.stringify(leituras)); 
+      } catch (e) {} 
+    } 
+
+    function carregarHistoricoStorage() { 
+      const d = localStorage.getItem(CHAVE_STORAGE); 
+      if (d) { 
+        try { 
+          leituras = JSON.parse(d); 
+          aplicarFiltros(); 
+        } catch (e) {} 
+      } 
+    }
+
+    function renderizarHistorico(lista = leituras) {
+      const div = document.getElementById('historico'); 
+      div.innerHTML = "";
+      if (lista.length === 0) { 
+        div.innerHTML = '<p class="empty-msg">Nenhum registro encontrado para os filtros selecionados.</p>'; 
+        return; 
+      }
+      lista.forEach(reg => {
+        const item = document.createElement('div');
+        item.className = 'historico-item';
+        
+        const resumoFormatted = (reg.resumo || "").replace(/\n/g, "<br>").replace(/ \| /g, "<br>");
+
+        item.innerHTML = `
+          <strong>${reg.item}</strong><br>
+          <small>Operador: <em>${reg.operador}</em> | Empresa: <em>${reg.empresa}</em> (${reg.data})</small>
+          <div class="historico-detalhes">${resumoFormatted}</div>
+          ${reg.obs && reg.obs !== '-' ? `<small style="margin-top:6px; display:block;"><strong>Obs Geral / Livro de Ocorrência:</strong> \${reg.obs}</small>` : ''}
+        `;
+        div.appendChild(item);
+      });
+    }
+
+    function exportarExcel() {
+      const dadosExportar = leiturasExibidas.length > 0 ? leiturasExibidas : leituras;
+      if (dadosExportar.length === 0) { alert("Nenhum registro encontrado para exportar o relatório."); return; }
+      if (typeof XLSX === 'undefined') { alert("Biblioteca do Excel não carregou."); return; }
+
+      const checklistFiltro = document.getElementById('summary-checklist-text').textContent;
+      const periodoFiltro = document.getElementById('summary-periodo-text').textContent;
+
+      const dataRows = [
+        ["HEMOBRÁS - RELATÓRIO DINÂMICO DE INSPEÇÕES E LEITURAS"],
+        ["Filtro de Checklist:", checklistFiltro],
+        ["Filtro de Período:", periodoFiltro],
+        ["Total de Registros Exibidos:", `${dadosExportar.length}`],
+        ["Data da Emissão:", new Date().toLocaleString('pt-BR')],
+        [],
+        ["Data e Hora", "Operador / Executante", "Empresa", "Módulo / Item Inspecionado", "Detalhamento das Leituras & Observações por Item (Linha a Linha)", "Observações Gerais / Livro de Ocorrência"]
+      ];
+
+      dadosExportar.forEach(i => {
+        dataRows.push([
+          i.data, 
+          i.operador, 
+          i.empresa, 
+          i.item, 
+          (i.resumo || "").replace(/<br\s*\/?>/gi, "\n").replace(/ \| /g, "\n"), 
+          i.obs
+        ]);
+      });
+
+      const ws = XLSX.utils.aoa_to_sheet(dataRows);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Relatorio Filtrado");
+      XLSX.writeFile(wb, `Relatorio_Filtrado_Hemobras_${new Date().toISOString().split('T')[0]}.xlsx`);
+    }
+
+    function exportarPDF() {
+      const dadosExportar = leiturasExibidas.length > 0 ? leiturasExibidas : leituras;
+      if (dadosExportar.length === 0) { alert("Nenhum registro encontrado para exportar o relatório."); return; }
+      if (!window.jspdf || !window.jspdf.jsPDF) { alert("Biblioteca do PDF não carregou."); return; }
+      
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ orientation: 'landscape' });
+
+      const checklistFiltro = document.getElementById('summary-checklist-text').textContent;
+      const periodoFiltro = document.getElementById('summary-periodo-text').textContent;
+
+      doc.setFontSize(14); 
+      doc.setTextColor(128, 0, 32);
+      doc.text("HEMOBRÁS - RELATÓRIO DINÂMICO DE INSPEÇÃO E UTILIDADES", 14, 15);
+      
+      doc.setFontSize(9); 
+      doc.setTextColor(50);
+      doc.text(`Filtro Checklist: ${checklistFiltro}`, 14, 21);
+      doc.text(`Filtro Período: ${periodoFiltro} | Registros: ${dadosExportar.length}`, 14, 26);
+      doc.text(`Data de Emissão: ${new Date().toLocaleString('pt-BR')}`, 14, 31);
+
+      const cols = ["Data e Hora", "Operador", "Empresa", "Módulo / Item / Equipamento", "Detalhamento das Leituras & Observações por Item"];
+      const rows = dadosExportar.map(i => [
+        i.data, 
+        i.operador, 
+        i.empresa, 
+        i.item, 
+        (i.resumo || "").replace(/<br\s*\/?>/gi, "\n").replace(/ \| /g, "\n")
+      ]);
+
+      doc.autoTable({ 
+        startY: 35, 
+        head: [cols], 
+        body: rows, 
+        headStyles: { fillColor: [128, 0, 32], textColor: [255, 255, 255], fontStyle: 'bold' },
+        styles: { fontSize: 8, cellPadding: 3, overflow: 'linebreak' },
+        columnStyles: {
+          0: { cellWidth: 32 },
+          1: { cellWidth: 30 },
+          2: { cellWidth: 30 },
+          3: { cellWidth: 55 },
+          4: { cellWidth: 'auto' }
+        }
+      });
+
+      doc.save(`Relatorio_Filtrado_Hemobras_${new Date().toISOString().split('T')[0]}.pdf`);
+    }
+  </script>
+</body>
+</html>
