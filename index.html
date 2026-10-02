@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Sistema Unificado de Inspeção - Hemobrás</title>
 
-  <!-- Bibliotecas de Exportação (PDF) -->
+  <!-- Bibliotecas de Exportação (PDF e Leitor QR Code) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
 
   <style>
     * { 
@@ -306,9 +307,9 @@
       background-color: #2b6cb0;
       color: white;
       border: none;
-      padding: 4px 10px;
+      padding: 6px 12px;
       border-radius: 4px;
-      font-size: 0.78rem;
+      font-size: 0.82rem;
       font-weight: bold;
       cursor: pointer;
     }
@@ -330,6 +331,46 @@
       color: #222; 
       white-space: pre-wrap; 
       font-family: monospace, monospace; 
+    }
+
+    .maint-link-card {
+      background-color: #ffffff;
+      border: 2px solid #3182ce;
+      border-radius: 8px;
+      padding: 14px;
+      margin-bottom: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .maint-link-card h4 {
+      color: #2b6cb0;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .maint-link-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background-color: #2b6cb0;
+      color: #ffffff !important;
+      text-decoration: none;
+      padding: 12px 18px;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 0.95rem;
+      transition: background-color 0.2s;
+      border: none;
+      cursor: pointer;
+    }
+
+    .maint-link-btn:hover {
+      background-color: #2c5282;
     }
 
     .empty-msg { 
@@ -355,7 +396,7 @@
         <img src="logo_hemo.jpeg" alt="Logo Hemobrás" class="logo-img">
         <div class="header-text">
           <h1>Hemobrás - Sistema Unificado de Inspeção</h1>
-          <h2>Monitoramento Operacional e Utilidades</h2>
+          <h2>Monitoramento Operacional, Utilidades e Leitor QR Code</h2>
         </div>
       </div>
     </header>
@@ -405,6 +446,7 @@
             <option value="ELEC_GROUND">10. Salas Elétricas Térreo (Dividido por Sala e Equipamento: 1041 B07A / 1033 B07B)</option>
             <option value="ELEC_PISO3">11. Salas Elétricas Piso 3 (Dividido por Sala e Equipamento: 3003 B07A / 3011 B07B)</option>
             <option value="B14">12. Rotina Diária B14 (Dividido por Sub-sistema: Filtração, Cloração, Incêndio, Drenagem, Ar Comprimido)</option>
+            <option value="MAINT_FAILURES">13. Manutenção & Leitor QR Code / Painel de Falhas</option>
           </select>
         </div>
       </section>
@@ -423,7 +465,52 @@
           <div class="form-row" id="row-campos-quantitativos"></div>
         </div>
 
-        <div class="table-container">
+        <!-- PAINEL DE LEITOR QR CODE E ACESSO À MANUTENÇÃO (MÓDULO 13) -->
+        <div id="container-falhas-manutencao" style="display: none; margin-bottom: 15px;">
+          
+          <!-- CARTÃO 1: LEITOR DE QR CODE E CÓDIGO DE BARRAS -->
+          <div class="maint-link-card" style="border-color: #800020;">
+            <h4 style="color: #800020;">📷 Leitor de QR Code / Código de Barras de Equipamento</h4>
+            <p style="font-size: 0.88rem; color: #4a5568;">Utilize a câmera do dispositivo ou envie uma foto para ler o QR Code fixado na máquina/painel:</p>
+            
+            <div id="qr-reader-wrapper" style="width:100%; max-width:450px; margin: 8px auto; border: 2px dashed #800020; border-radius: 8px; padding: 10px; min-height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fff5f5;">
+              <div id="qr-reader" style="width:100%;"></div>
+              <p id="qr-placeholder-text" style="color: #742a2a; font-size: 0.88rem; text-align: center; margin-top: 10px;">A câmera está desligada. Clique no botão abaixo para ativar a leitura em tempo real ou selecione um arquivo.</p>
+            </div>
+
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;">
+              <button type="button" id="btn-start-qr" onclick="iniciarLeitorQR()" class="maint-link-btn" style="background-color: #800020; flex:1; min-width: 200px;">📷 Iniciar Câmera do Dispositivo</button>
+              <button type="button" id="btn-stop-qr" onclick="pararLeitorQR()" class="maint-link-btn" style="background-color: #e53e3e; display: none; flex:1; min-width: 200px;">⏹️ Desligar Câmera</button>
+            </div>
+
+            <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid #fed7d7;">
+              <label for="qr-file-input" style="font-size: 0.88rem; font-weight: 600; color: #4a5568;">Ou selecione uma foto / imagem da galeria com QR Code:</label>
+              <input type="file" id="qr-file-input" accept="image/*" onchange="lerQRCodeDeArquivo(event)" style="margin-top: 6px;">
+            </div>
+
+            <div id="qr-result-card" style="display: none; background-color: #e6fffa; border: 2px solid #319795; padding: 12px; border-radius: 6px; margin-top: 12px;">
+              <h5 style="color: #234e52; margin-bottom: 6px; font-size: 0.95rem;">✅ Conteúdo Lido do QR Code:</h5>
+              <div id="qr-result-text" style="font-family: monospace, monospace; font-size: 0.95rem; word-break: break-all; color: #1d4044; background: #ffffff; padding: 8px; border-radius: 4px; border: 1px solid #b2f5ea; margin-bottom: 8px;"></div>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <button type="button" onclick="copiarTextoQR()" class="btn-item-edit" style="background-color: #319795;">📋 Copiar Texto</button>
+                <a id="qr-link-btn" href="#" target="_blank" class="btn-item-edit" style="background-color: #2b6cb0; display: none; text-decoration: none;">🔗 Abrir Link Lido</a>
+                <button type="button" onclick="usarTAGNoRegistro()" class="btn-item-edit" style="background-color: #800020;">📌 Inserir no Campo de Observações</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- CARTÃO 2: PAINEL DE FALHAS ABERTAS -->
+          <div class="maint-link-card" style="border-color: #3182ce;">
+            <h4 style="color: #2b6cb0;">🔧 Painel da Manutenção — Acompanhamento de Falhas Abertas</h4>
+            <p style="font-size: 0.88rem; color: #4a5568;">Acesse o dashboard em tempo real para consultar o status de falhas e ocorrências pendentes:</p>
+            <a href="https://script.google.com/macros/s/AKfycbzR0NMJL2R2wHRNrn46J0Sz8o3kvWvI27HAUP3KVSAqGXlUi3XWSdIZr36YsW7ZCjAO0w/exec" target="_blank" class="maint-link-btn">
+              📊 Acessar Painel de Falhas Abertas
+            </a>
+          </div>
+
+        </div>
+
+        <div class="table-container" id="container-tabela-padrao">
           <table class="data-table">
             <thead id="thead-parametros"></thead>
             <tbody id="tbody-parametros"></tbody>
@@ -468,6 +555,7 @@
               <option value="ELEC_GROUND">10. Salas Elétricas Térreo</option>
               <option value="ELEC_PISO3">11. Salas Elétricas Piso 3</option>
               <option value="B14">12. Rotina Diária B14</option>
+              <option value="MAINT_FAILURES">13. Manutenção & Leitor QR Code</option>
             </select>
           </div>
 
@@ -506,10 +594,11 @@
   </div>
 
   <script>
-    const CHAVE_STORAGE = "hemobras_unificado_master_v34";
+    const CHAVE_STORAGE = "hemobras_unificado_master_v38";
     let leituras = [];
     let leiturasExibidas = [];
     let editandoId = null;
+    let html5QrCodeScanner = null;
 
     function criarBaseHVAC(prefixo, salasInfo, ahusCount, cruCount) {
       const data = {};
@@ -1054,6 +1143,9 @@
       "B14": {
         titulo: "12. Rotina Diária B14 (Dividido por Sub-sistema)", temSubitem: true, isBWT: false, isElec: false,
         data: dataB14_Equipamentos, equipItems: b14EquipItems
+      },
+      "MAINT_FAILURES": {
+        titulo: "13. Manutenção & Leitor QR Code / Painel de Falhas", temSubitem: false, isBWT: false, isElec: false, isMaint: true
       }
     };
 
@@ -1075,7 +1167,19 @@
 
       const subContainer = document.getElementById('container-subitem');
       const subSelect = document.getElementById('subitem-select');
+      const containerMaint = document.getElementById('container-falhas-manutencao');
+      const containerTable = document.getElementById('container-tabela-padrao');
       
+      if (cfg.isMaint) {
+        subContainer.style.display = 'none';
+        containerMaint.style.display = 'block';
+        containerTable.style.display = 'none';
+        return;
+      } else {
+        containerMaint.style.display = 'none';
+        containerTable.style.display = 'block';
+      }
+
       if (cfg.temSubitem) {
         subContainer.style.display = 'block';
         subSelect.innerHTML = '<option value="">-- Selecione o Equipamento / Sub-sistema / Painel --</option>';
@@ -1132,6 +1236,8 @@
       thead.innerHTML = ""; tbody.innerHTML = "";
       containerQuant.style.display = "none";
       rowQuant.innerHTML = "";
+
+      if (cfg.isMaint) return;
 
       if (cfg.isBWT) {
         if (!selectedItem) {
@@ -1351,6 +1457,103 @@
       }
     }
 
+    /* FUNÇÕES DO LEITOR DE QR CODE */
+    function iniciarLeitorQR() {
+      const placeholder = document.getElementById('qr-placeholder-text');
+      if (placeholder) placeholder.style.display = 'none';
+
+      if (!html5QrCodeScanner) {
+        html5QrCodeScanner = new Html5Qrcode("qr-reader");
+      }
+
+      const config = { fps: 10, qrbox: { width: 220, height: 220 } };
+
+      html5QrCodeScanner.start(
+        { facingMode: "environment" },
+        config,
+        (decodedText) => {
+          exibirResultadoQR(decodedText);
+          pararLeitorQR();
+        },
+        (errorMessage) => {
+          // Erro contínuo de varredura
+        }
+      ).then(() => {
+        document.getElementById('btn-start-qr').style.display = 'none';
+        document.getElementById('btn-stop-qr').style.display = 'inline-flex';
+      }).catch(err => {
+        alert("Não foi possível acessar a câmera do dispositivo. Verifique as permissões ou utilize a opção de seleção de imagem da galeria.");
+        console.error("Erro na câmera:", err);
+      });
+    }
+
+    function pararLeitorQR() {
+      if (html5QrCodeScanner) {
+        html5QrCodeScanner.stop().then(() => {
+          document.getElementById('btn-start-qr').style.display = 'inline-flex';
+          document.getElementById('btn-stop-qr').style.display = 'none';
+          const placeholder = document.getElementById('qr-placeholder-text');
+          if (placeholder) {
+            placeholder.style.display = 'block';
+            placeholder.textContent = 'A câmera está desligada. Clique acima para iniciar a leitura em tempo real ou selecione uma imagem.';
+          }
+        }).catch(err => {
+          console.error("Erro ao parar leitor:", err);
+        });
+      }
+    }
+
+    function lerQRCodeDeArquivo(e) {
+      if (!e.target.files || e.target.files.length === 0) return;
+      const file = e.target.files[0];
+      const html5QrCode = new Html5Qrcode("qr-reader");
+
+      html5QrCode.scanFile(file, true)
+        .then(decodedText => {
+          exibirResultadoQR(decodedText);
+        })
+        .catch(err => {
+          alert("Nenhum QR Code legível foi encontrado na foto/imagem selecionada.");
+        });
+    }
+
+    function exibirResultadoQR(texto) {
+      document.getElementById('qr-result-card').style.display = 'block';
+      document.getElementById('qr-result-text').textContent = texto;
+
+      const linkBtn = document.getElementById('qr-link-btn');
+      if (texto.startsWith('http://') || texto.startsWith('https://')) {
+        linkBtn.href = texto;
+        linkBtn.style.display = 'inline-flex';
+      } else {
+        linkBtn.style.display = 'none';
+      }
+    }
+
+    function copiarTextoQR() {
+      const txt = document.getElementById('qr-result-text').textContent;
+      if (!txt) return;
+      navigator.clipboard.writeText(txt).then(() => {
+        alert("Texto do QR Code copiado para a área de transferência!");
+      }).catch(() => {
+        alert("Texto Lido: " + txt);
+      });
+    }
+
+    function usarTAGNoRegistro() {
+      const txt = document.getElementById('qr-result-text').textContent;
+      if (!txt) return;
+      const obsInput = document.getElementById('observacoes-leitura');
+      if (obsInput) {
+        if (obsInput.value.trim() !== '') {
+          obsInput.value += ` | QR Code: ${txt}`;
+        } else {
+          obsInput.value = `QR Code: ${txt}`;
+        }
+        alert(`TAG/Código "${txt}" inserido no campo de Observações Gerais!`);
+      }
+    }
+
     function salvarLeitura() {
       const operador = document.getElementById('operador').value;
       const empresa = document.getElementById('empresa').value;
@@ -1367,7 +1570,18 @@
       let detalheItem = cfg.titulo;
       let itensDetalhados = [];
 
-      if (cfg.isBWT) {
+      if (cfg.isMaint) {
+        detalheItem = "13. Manutenção & Leitor QR Code / Painel de Falhas";
+        
+        const qrTxt = document.getElementById('qr-result-text')?.textContent;
+        if (qrTxt && qrTxt.trim() !== "") {
+          itensDetalhados.push(`• Leitura de QR Code (Scanner): ${qrTxt.trim()}`);
+        }
+        
+        itensDetalhados.push("• Painel da Manutenção - Falhas Abertas: https://script.google.com/macros/s/AKfycbzR0NMJL2R2wHRNrn46J0Sz8o3kvWvI27HAUP3KVSAqGXlUi3XWSdIZr36YsW7ZCjAO0w/exec");
+        itensDetalhados.push("• Ação: Registro/consulta realizada através do módulo de Manutenção & QR Code.");
+
+      } else if (cfg.isBWT) {
         const subKey = document.getElementById('subitem-select').value;
         if (!subKey) { alert("Selecione o Equipamento ou Seção do BWT."); return; }
         detalheItem += ` - ${subKey}`;
@@ -1567,14 +1781,16 @@
         document.getElementById('modulo').value = reg.moduloKey;
         alternarModulo();
 
-        const cfg = modulosConfig[reg.moduloKey];
-        if (cfg && cfg.temSubitem) {
-          const partesItem = reg.item.split(" - ");
-          if (partesItem.length > 1) {
-            const subName = partesItem.slice(1).join(" - ");
-            const subSelect = document.getElementById('subitem-select');
-            subSelect.value = subName;
-            carregarSubitemSetpoints();
+        if (reg.moduloKey !== "MAINT_FAILURES") {
+          const cfg = modulosConfig[reg.moduloKey];
+          if (cfg && cfg.temSubitem) {
+            const partesItem = reg.item.split(" - ");
+            if (partesItem.length > 1) {
+              const subName = partesItem.slice(1).join(" - ");
+              const subSelect = document.getElementById('subitem-select');
+              subSelect.value = subName;
+              carregarSubitemSetpoints();
+            }
           }
         }
       }
@@ -1704,7 +1920,14 @@
         const item = document.createElement('div');
         item.className = 'historico-item';
         
-        const resumoFormatted = (reg.resumo || "").replace(/\n/g, "<br>").replace(/ \| /g, "<br>");
+        let resumoFormatted = (reg.resumo || "")
+          .replace(/\n/g, "<br>")
+          .replace(/ \| /g, "<br>");
+
+        // Formatar links para serem clicáveis no histórico
+        if (resumoFormatted.includes("https://")) {
+          resumoFormatted = resumoFormatted.replace(/(https:\/\/[^\s<]+)/g, '<a href="\$1" target="_blank" style="color:#2b6cb0; font-weight:bold; text-decoration:underline;">🔗 \$1</a>');
+        }
 
         item.innerHTML = `
           <div class="historico-header-actions">
@@ -1732,7 +1955,7 @@
 
       doc.setFontSize(14); 
       doc.setTextColor(128, 0, 32);
-      doc.text("HEMOBRÁS - RELATÓRIO DINÂMICO DE INSPEÇÃO E UTILIDADES", 14, 15);
+      doc.text("HEMOBRÁS - RELATÓRIO DINÂMICO DE INSPEÇÃO, UTILIDADES E MANUTENÇÃO", 14, 15);
       
       doc.setFontSize(9); 
       doc.setTextColor(50);
