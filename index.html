@@ -470,8 +470,8 @@
           
           <!-- CARTÃO 1: LEITOR DE QR CODE E CÓDIGO DE BARRAS -->
           <div class="maint-link-card" style="border-color: #800020;">
-            <h4 style="color: #800020;">📷 Leitor de QR Code / Código de Barras de Equipamento</h4>
-            <p style="font-size: 0.88rem; color: #4a5568;">Utilize a câmera do dispositivo ou envie uma foto para ler o QR Code fixado na máquina/painel:</p>
+            <h4 style="color: #800020;">📷 Leitor de QR Code / Código de Barras com Abertura Direta de Link</h4>
+            <p style="font-size: 0.88rem; color: #4a5568;">Utilize a câmera do dispositivo ou envie uma foto. Ao ler o QR Code, se contiver um link web, ele será **aberto automaticamente em nova aba**:</p>
             
             <div id="qr-reader-wrapper" style="width:100%; max-width:450px; margin: 8px auto; border: 2px dashed #800020; border-radius: 8px; padding: 10px; min-height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fff5f5;">
               <div id="qr-reader" style="width:100%;"></div>
@@ -493,7 +493,7 @@
               <div id="qr-result-text" style="font-family: monospace, monospace; font-size: 0.95rem; word-break: break-all; color: #1d4044; background: #ffffff; padding: 8px; border-radius: 4px; border: 1px solid #b2f5ea; margin-bottom: 8px;"></div>
               <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                 <button type="button" onclick="copiarTextoQR()" class="btn-item-edit" style="background-color: #319795;">📋 Copiar Texto</button>
-                <a id="qr-link-btn" href="#" target="_blank" class="btn-item-edit" style="background-color: #2b6cb0; display: none; text-decoration: none;">🔗 Abrir Link Lido</a>
+                <a id="qr-link-btn" href="#" target="_blank" class="btn-item-edit" style="background-color: #2b6cb0; display: none; text-decoration: none;">🔗 Abrir Link Novamente</a>
                 <button type="button" onclick="usarTAGNoRegistro()" class="btn-item-edit" style="background-color: #800020;">📌 Inserir no Campo de Observações</button>
               </div>
             </div>
@@ -594,7 +594,7 @@
   </div>
 
   <script>
-    const CHAVE_STORAGE = "hemobras_unificado_master_v38";
+    const CHAVE_STORAGE = "hemobras_unificado_master_v39";
     let leituras = [];
     let leiturasExibidas = [];
     let editandoId = null;
@@ -1457,7 +1457,7 @@
       }
     }
 
-    /* FUNÇÕES DO LEITOR DE QR CODE */
+    /* FUNÇÕES DO LEITOR DE QR CODE COM ABERTURA DIRETA DE LINK */
     function iniciarLeitorQR() {
       const placeholder = document.getElementById('qr-placeholder-text');
       if (placeholder) placeholder.style.display = 'none';
@@ -1472,7 +1472,7 @@
         { facingMode: "environment" },
         config,
         (decodedText) => {
-          exibirResultadoQR(decodedText);
+          exibirResultadoQR(decodedText, true);
           pararLeitorQR();
         },
         (errorMessage) => {
@@ -1510,21 +1510,28 @@
 
       html5QrCode.scanFile(file, true)
         .then(decodedText => {
-          exibirResultadoQR(decodedText);
+          exibirResultadoQR(decodedText, true);
         })
         .catch(err => {
           alert("Nenhum QR Code legível foi encontrado na foto/imagem selecionada.");
         });
     }
 
-    function exibirResultadoQR(texto) {
+    function exibirResultadoQR(texto, abrirAutomatico = true) {
       document.getElementById('qr-result-card').style.display = 'block';
       document.getElementById('qr-result-text').textContent = texto;
 
       const linkBtn = document.getElementById('qr-link-btn');
-      if (texto.startsWith('http://') || texto.startsWith('https://')) {
+      const isUrl = texto.startsWith('http://') || texto.startsWith('https://');
+
+      if (isUrl) {
         linkBtn.href = texto;
         linkBtn.style.display = 'inline-flex';
+        
+        // Abrir diretamente em nova aba se solicitado
+        if (abrirAutomatico) {
+          window.open(texto, '_blank');
+        }
       } else {
         linkBtn.style.display = 'none';
       }
