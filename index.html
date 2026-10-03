@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistema Unificado de Inspeção & Manutenção - Hemobrás</title>
 
   <!-- Bibliotecas de Exportação (PDF e Leitor QR Code) -->
@@ -25,7 +25,8 @@
     }
 
     .container { 
-      max-width: 940px; 
+      width: 100%;
+      max-width: 1200px; 
       margin: 0 auto; 
     }
 
@@ -294,6 +295,8 @@
     .table-container { 
       width: 100%; 
       overflow-x: auto; 
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-x: contain;
       margin-bottom: 15px; 
     }
 
@@ -507,6 +510,25 @@
       color: #777; 
       font-style: italic; 
       font-size: 0.88rem; 
+    }
+
+    @media (max-width: 599px) {
+      body { padding: 10px; }
+      header { padding: 14px 12px; }
+      .header-content { gap: 10px; }
+      .header-text { min-width: 0; }
+      .header-text h1 { font-size: 1.25rem; overflow-wrap: anywhere; }
+      .header-text h2 { font-size: 0.82rem; line-height: 1.4; }
+      .sync-status-badge { max-width: 100%; white-space: normal; }
+      .nav-tabs-container { flex-direction: column; }
+      .tab-btn { min-width: 0; width: 100%; padding: 12px; font-size: 0.92rem; }
+      .card { padding: 14px; }
+      .form-group { min-width: 0; flex-basis: 100%; }
+      .banner-edicao { align-items: stretch; flex-direction: column; gap: 10px; }
+      .btn-cancelar { min-height: 44px; }
+      .btn-step, .btn-primary { min-width: 100%; }
+      .btn-export { min-width: 100%; }
+      .historico-header-actions { align-items: flex-start; }
     }
 
     @media (min-width: 600px) {
