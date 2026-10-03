@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Sistema Unificado de Inspeção - Hemobrás</title>
+  <title>Sistema Unificado de Inspeção & Manutenção - Hemobrás</title>
 
   <!-- Bibliotecas de Exportação (PDF e Leitor QR Code) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -25,7 +25,7 @@
     }
 
     .container { 
-      max-width: 920px; 
+      max-width: 940px; 
       margin: 0 auto; 
     }
 
@@ -66,6 +66,61 @@
       opacity: 0.9; 
     }
 
+    .sync-status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: bold;
+      background-color: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      margin-top: 8px;
+    }
+
+    /* TABS DE NAVEGAÇÃO PRINCIPAL */
+    .nav-tabs-container {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      flex: 1;
+      min-width: 240px;
+      padding: 14px 16px;
+      border: 2px solid #800020;
+      background-color: #ffffff;
+      color: #800020;
+      border-radius: 8px;
+      font-size: 0.98rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .tab-btn.active-tab {
+      background-color: #800020;
+      color: #ffffff;
+    }
+
+    .tab-btn.maint-tab {
+      border-color: #276749;
+      color: #276749;
+    }
+
+    .tab-btn.maint-tab.active-tab {
+      background-color: #276749;
+      color: #ffffff;
+    }
+
     .card { 
       background: #fff; 
       padding: 16px; 
@@ -80,6 +135,11 @@
       margin-bottom: 12px; 
       border-bottom: 2px solid #f4f7f6; 
       padding-bottom: 6px; 
+    }
+
+    .card h3.maint-header {
+      color: #276749;
+      border-bottom-color: #e6fffa;
     }
 
     .banner-edicao {
@@ -166,6 +226,44 @@
       color: #495057; 
     }
 
+    /* BARRA DE PROGRESSO DO MÓDULO */
+    .modulo-progress-box {
+      background-color: #fff5f5;
+      border: 2px solid #800020;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .modulo-progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: bold;
+      font-size: 0.92rem;
+      color: #800020;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 12px;
+      background-color: #e2e8f0;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background-color: #38a169;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
     .filter-card { 
       background-color: #f8f9fa; 
       border: 1px solid #e2e8f0; 
@@ -226,6 +324,27 @@
       padding: 8px 10px; 
     }
 
+    .btn-action-container {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .btn-step {
+      background-color: #2b6cb0;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      font-weight: bold;
+      flex: 1;
+      min-width: 220px;
+      min-height: 48px;
+    }
+
     .btn-primary { 
       background-color: #800020; 
       color: white; 
@@ -234,10 +353,10 @@
       border-radius: 6px; 
       font-size: 1rem; 
       cursor: pointer; 
-      width: 100%; 
+      flex: 1;
+      min-width: 260px;
       font-weight: bold; 
       min-height: 48px; 
-      margin-top: 10px; 
     }
 
     .btn-primary.modo-edicao {
@@ -266,6 +385,11 @@
       align-items: center; 
       justify-content: center; 
       gap: 6px; 
+      text-decoration: none;
+    }
+
+    .btn-sync-sheets {
+      background-color: #276749;
     }
 
     .btn-edit-top { 
@@ -299,8 +423,9 @@
     .historico-header-actions {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 4px;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
     }
 
     .btn-item-edit {
@@ -314,23 +439,28 @@
       cursor: pointer;
     }
 
+    .badge-nuvem {
+      display: inline-block;
+      font-size: 0.72rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: bold;
+      margin-left: 8px;
+    }
+    .badge-sincronizado {
+      background-color: #c6f6d5;
+      color: #22543d;
+    }
+    .badge-pendente {
+      background-color: #feebc8;
+      color: #744210;
+    }
+
     .historico-item small { 
       display: block; 
       margin-top: 4px; 
       color: #555; 
       font-size: 0.82rem; 
-    }
-
-    .historico-detalhes { 
-      margin-top: 8px; 
-      padding: 8px 10px; 
-      background-color: #ffffff; 
-      border-left: 3px solid #800020; 
-      border-radius: 4px; 
-      font-size: 0.85rem; 
-      color: #222; 
-      white-space: pre-wrap; 
-      font-family: monospace, monospace; 
     }
 
     .maint-link-card {
@@ -395,11 +525,24 @@
       <div class="header-content">
         <img src="logo_hemo.jpeg" alt="Logo Hemobrás" class="logo-img">
         <div class="header-text">
-          <h1>Hemobrás - Sistema Unificado de Inspeção</h1>
-          <h2>Monitoramento Operacional, Utilidades e Leitor QR Code</h2>
+          <h1>Hemobrás - Sistema Unificado de Inspeção & Manutenção</h1>
+          <h2>Módulos Operacionais (1 a 12) | Central de Manutenção, QR Code & Web App (Módulo 13)</h2>
+          <div id="badge-status-conexao" class="sync-status-badge">
+            <span id="icone-conexao">🟢</span> <span id="texto-conexao">Planilha Google Integrada</span>
+          </div>
         </div>
       </div>
     </header>
+
+    <!-- TABS DE NAVEGAÇÃO PRINCIPAL -->
+    <div class="nav-tabs-container">
+      <button type="button" id="tab-btn-inspec" onclick="selecionarAba('INSPEC')" class="tab-btn active-tab">
+        📋 Checklists de Inspeção Operacional (Módulos 1 a 12)
+      </button>
+      <button type="button" id="tab-btn-maint" onclick="selecionarAba('MAINT')" class="tab-btn maint-tab">
+        🔧 Central de Manutenção & QR Code (Módulo 13)
+      </button>
+    </div>
 
     <form id="unified-form">
       <!-- Indicador de Modo Edição -->
@@ -408,8 +551,8 @@
         <button type="button" onclick="cancelarEdicao()" class="btn-cancelar">❌ Cancelar Edição</button>
       </div>
 
-      <!-- Identificação do Registro -->
-      <section class="card">
+      <!-- Identificação do Registro (Exibido apenas nos Módulos 1 a 12) -->
+      <section class="card" id="secao-identificacao">
         <h3>Identificação do Registro</h3>
         <div class="form-row">
           <div class="form-group">
@@ -427,46 +570,84 @@
         </div>
       </section>
 
-      <!-- Seleção do Módulo -->
-      <section class="card">
-        <h3>Módulo / Formato de Inspeção</h3>
-        <div class="form-group">
-          <label for="modulo">Selecione o Módulo de Inspeção:</label>
-          <select id="modulo" class="modulo-selector" onchange="alternarModulo()" required>
-            <option value="">-- Escolha a área a ser inspecionada --</option>
-            <option value="HVAC_B07A">1. HVAC B07A - 1º Piso (54 Salas, AHUs, CRUs, DOAS)</option>
-            <option value="HVAC_B07B">2. HVAC B07B - Prédio B07B (103 Salas, AHUs, CRUs, DOAS)</option>
-            <option value="HVAC_ROUTINE">3. Rotina Diária de Inspeção HVAC B07 (Dividido por Sub-sistema: BMS, Chillers, AHUs, etc.)</option>
-            <option value="BWT_7A">4. Tratamento de Água BWT 7A (Duosmostil, Multistill, Loopo, Vapotron)</option>
-            <option value="BWT_7B">5. Tratamento de Água BWT 7B (Osmotron, Loopo PW, Multistill, Loopo WFI, Vapotron)</option>
-            <option value="WWT">6. Estação de Tratamento de Efluentes WWT (Dividido por Equipamento: Elevatória, Equalização, Reator, etc.)</option>
-            <option value="SKIDS_B07">7. Skids Dosadores e Insumos Químicos B07 (Dividido por Skid: CAG, Processo, Torre, etc.)</option>
-            <option value="STEAM_2">8. Inspeção Diária Sistema de Vapor Nº 2 (Dividido por Equipamento: Caldeiras 2/3, Abrandador, Desaerador, Skids, Blowdown)</option>
-            <option value="GENERATORS">9. Inspeção de Geradores 7F (Dividido por Equipamento: GEN 1, GEN 2, Bomba, Inversor, Tanque, Resistor)</option>
-            <option value="ELEC_GROUND">10. Salas Elétricas Térreo (Dividido por Sala e Equipamento: 1041 B07A / 1033 B07B)</option>
-            <option value="ELEC_PISO3">11. Salas Elétricas Piso 3 (Dividido por Sala e Equipamento: 3003 B07A / 3011 B07B)</option>
-            <option value="B14">12. Rotina Diária B14 (Dividido por Sub-sistema: Filtração, Cloração, Incêndio, Drenagem, Ar Comprimido)</option>
-            <option value="MAINT_FAILURES">13. Manutenção & Leitor QR Code / Painel de Falhas</option>
-          </select>
-        </div>
-      </section>
+      <!-- ABA 1: CHECKLISTS DE INSPEÇÃO OPERACIONAL (MÓDULOS 1 A 12) -->
+      <div id="secao-aba-inspec">
+        <section class="card">
+          <h3>📋 Módulos de Inspeção Operacional (Checklists 1 a 12)</h3>
+          <div class="form-group">
+            <label for="modulo">Selecione o Módulo de Inspeção Operacional:</label>
+            <select id="modulo" class="modulo-selector" onchange="alternarModulo()" required>
+              <option value="">-- Escolha a área a ser inspecionada (Módulos 1 a 12) --</option>
+              <optgroup label="📋 MÓDULOS OPERACIONAIS DE INSPEÇÃO DIÁRIA">
+                <option value="HVAC_B07A">1. HVAC B07A - 1º Piso (54 Salas, AHUs, CRUs, DOAS)</option>
+                <option value="HVAC_B07B">2. HVAC B07B - Prédio B07B (103 Salas, AHUs, CRUs, DOAS)</option>
+                <option value="HVAC_ROUTINE">3. Rotina Diária de Inspeção HVAC B07 (Dividido por Sub-sistema: BMS, Chillers, AHUs, etc.)</option>
+                <option value="BWT_7A">4. Tratamento de Água BWT 7A (Duosmostil, Multistill, Loopo, Vapotron)</option>
+                <option value="BWT_7B">5. Tratamento de Água BWT 7B (Osmotron, Loopo PW, Multistill, Loopo WFI, Vapotron)</option>
+                <option value="WWT">6. Estação de Tratamento de Efluentes WWT (Dividido por Equipamento: Elevatória, Equalização, Reator, etc.)</option>
+                <option value="SKIDS_B07">7. Skids Dosadores e Insumos Químicos B07 (Dividido por Skid: CAG, Processo, Torre, etc.)</option>
+                <option value="STEAM_2">8. Inspeção Diária Sistema de Vapor Nº 2 (Dividido por Equipamento: Caldeiras 2/3, Abrandador, Desaerador, Skids, Blowdown)</option>
+                <option value="GENERATORS">9. Inspeção de Geradores 7F (Dividido por Equipamento: GEN 1, GEN 2, Bomba, Inversor, Tanque, Resistor)</option>
+                <option value="ELEC_GROUND">10. Salas Elétricas Térreo (Dividido por Sala e Equipamento: 1041 B07A / 1033 B07B)</option>
+                <option value="ELEC_PISO3">11. Salas Elétricas Piso 3 (Dividido por Sala e Equipamento: 3003 B07A / 3011 B07B)</option>
+                <option value="B14">12. Rotina Diária B14 (Dividido por Sub-sistema: Filtração, Cloração, Incêndio, Drenagem, Ar Comprimido)</option>
+              </optgroup>
+            </select>
+          </div>
+        </section>
 
-      <!-- SEÇÃO DINÂMICA DE MONITORAMENTO -->
-      <section class="card" id="secao-dinamica" style="display: none;">
-        <h3 id="titulo-modulo">Parâmetros do Módulo</h3>
-        
-        <div id="container-subitem" class="form-group" style="display: none;">
-          <label for="subitem-select">Equipamento / Sub-sistema / Painel:</label>
-          <select id="subitem-select" onchange="carregarSubitemSetpoints()"></select>
-        </div>
+        <!-- SEÇÃO DINÂMICA DE MONITORAMENTO DOS MÓDULOS 1-12 -->
+        <section class="card" id="secao-dinamica" style="display: none;">
+          <h3 id="titulo-modulo">Parâmetros do Módulo</h3>
 
-        <div id="container-parametros-quantitativos" style="display: none; margin-bottom: 15px; background-color: #f8f9fa; padding: 12px; border-radius: 6px; border: 1px solid #800020;">
-          <h4 style="color: #800020; margin-bottom: 8px; font-size: 0.95rem;">📊 Medições Físico-Químicas e Operacionais (Ref. Form Nº 227)</h4>
-          <div class="form-row" id="row-campos-quantitativos"></div>
-        </div>
+          <!-- BARRA DE PROGRESSO DE CONCLUSÃO DO MÓDULO -->
+          <div id="modulo-progress-box" class="modulo-progress-box" style="display: none;">
+            <div class="modulo-progress-header">
+              <span>📋 Progresso do Módulo: <strong id="progress-text-count">0 de 0 Equipamentos Inspecionados</strong></span>
+              <span id="progress-text-pct" style="color: #2f855a;">0% Concluído</span>
+            </div>
+            <div class="progress-bar-bg">
+              <div id="progress-bar-fill" class="progress-bar-fill"></div>
+            </div>
+          </div>
 
-        <!-- PAINEL DE LEITOR QR CODE E ACESSO À MANUTENÇÃO (MÓDULO 13) -->
-        <div id="container-falhas-manutencao" style="display: none; margin-bottom: 15px;">
+          <div id="container-subitem" class="form-group" style="display: none;">
+            <label for="subitem-select">Equipamento / Sub-sistema / Painel:</label>
+            <select id="subitem-select" onchange="carregarSubitemSetpoints()"></select>
+          </div>
+
+          <div id="container-parametros-quantitativos" style="display: none; margin-bottom: 15px; background-color: #f8f9fa; padding: 12px; border-radius: 6px; border: 1px solid #800020;">
+            <h4 style="color: #800020; margin-bottom: 8px; font-size: 0.95rem;">📊 Medições Físico-Químicas e Operacionais (Ref. Form Nº 227)</h4>
+            <div class="form-row" id="row-campos-quantitativos"></div>
+          </div>
+
+          <div class="table-container" id="container-tabela-padrao">
+            <table class="data-table">
+              <thead id="thead-parametros"></thead>
+              <tbody id="tbody-parametros"></tbody>
+            </table>
+          </div>
+
+          <div class="form-group">
+            <label for="observacoes-leitura">Observações Gerais do Módulo / Livro de Ocorrência:</label>
+            <input type="text" id="observacoes-leitura" placeholder="Registre anomalias globais do módulo, EAM/TAG, paralisações ou observações gerais">
+          </div>
+
+          <div class="btn-action-container">
+            <button type="button" id="btn-save-step" onclick="salvarEtapaEquipamento()" class="btn-step" style="display: none;">
+              📥 Salvar Etapa e Ir para Próximo
+            </button>
+            <button type="button" id="btn-salvar-main" onclick="salvarLeituraModuloCompleto()" class="btn-primary">
+              🏁 Finalizar e Gravar Módulo Completo & Sincronizar
+            </button>
+          </div>
+        </section>
+      </div>
+
+      <!-- ABA 2: CENTRAL DO MÓDULO 13 (LEITOR DE QR CODE & WEB APPS) -->
+      <div id="secao-aba-maint" style="display: none;">
+        <section class="card" style="border-top: 4px solid #276749;">
+          <h3 class="maint-header">🔧 Central do Módulo 13 (Leitor de QR Code & Web Apps)</h3>
           
           <!-- CARTÃO 1: LEITOR DE QR CODE E CÓDIGO DE BARRAS -->
           <div class="maint-link-card" style="border-color: #800020;">
@@ -494,12 +675,20 @@
               <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                 <button type="button" onclick="copiarTextoQR()" class="btn-item-edit" style="background-color: #319795;">📋 Copiar Texto</button>
                 <a id="qr-link-btn" href="#" target="_blank" class="btn-item-edit" style="background-color: #2b6cb0; display: none; text-decoration: none;">🔗 Abrir Link Novamente</a>
-                <button type="button" onclick="usarTAGNoRegistro()" class="btn-item-edit" style="background-color: #800020;">📌 Inserir no Campo de Observações</button>
               </div>
             </div>
           </div>
 
-          <!-- CARTÃO 2: PAINEL DE FALHAS ABERTAS -->
+          <!-- CARTÃO 2: WEB APP DO MÓDULO 13 (GOOGLE APPS SCRIPT) -->
+          <div class="maint-link-card" style="border-color: #276749; background-color: #f0fff4;">
+            <h4 style="color: #276749;">⚡ Web App do Módulo 13 (Google Apps Script)</h4>
+            <p style="font-size: 0.88rem; color: #2f855a;">Acesse o aplicativo web oficial e exclusivo do Módulo 13 para gestão da manutenção:</p>
+            <a href="https://script.google.com/macros/s/AKfycbyxPJaxKDPTDk6LWgPbz-2I7wHoRPzE-TAYUDolF3K6z0vQubMy7BtlUbdnmJvPai_MlQ/exec" target="_blank" class="maint-link-btn" style="background-color: #276749;">
+              🚀 Abrir Web App Módulo 13 (Google Apps Script)
+            </a>
+          </div>
+
+          <!-- CARTÃO 3: PAINEL DE FALHAS ABERTAS -->
           <div class="maint-link-card" style="border-color: #3182ce;">
             <h4 style="color: #2b6cb0;">🔧 Painel da Manutenção — Acompanhamento de Falhas Abertas</h4>
             <p style="font-size: 0.88rem; color: #4a5568;">Acesse o dashboard em tempo real para consultar o status de falhas e ocorrências pendentes:</p>
@@ -507,32 +696,18 @@
               📊 Acessar Painel de Falhas Abertas
             </a>
           </div>
-
-        </div>
-
-        <div class="table-container" id="container-tabela-padrao">
-          <table class="data-table">
-            <thead id="thead-parametros"></thead>
-            <tbody id="tbody-parametros"></tbody>
-          </table>
-        </div>
-
-        <div class="form-group">
-          <label for="observacoes-leitura">Observações Gerais / Livro de Ocorrência:</label>
-          <input type="text" id="observacoes-leitura" placeholder="Registre anomalias globais, EAM/TAG, paralisações, manutenção ou observações gerais">
-        </div>
-
-        <button type="button" id="btn-salvar-main" onclick="salvarLeitura()" class="btn-primary">Registrar Leitura no Módulo</button>
-      </section>
+        </section>
+      </div>
     </form>
 
-    <!-- Histórico Unificado -->
-    <section class="card">
+    <!-- Histórico Unificado (Exibido apenas na Aba de Inspeções) -->
+    <section class="card" id="secao-historico-unificado">
       <div class="header-with-actions">
-        <h3>Histórico Unificado de Registros</h3>
+        <h3>Histórico Unificado (Últimos 5 Registros)</h3>
         <div class="export-buttons">
-          <button type="button" onclick="iniciarEdicaoPrimeiroRegistro()" class="btn-export btn-edit-top">✏️ Editar Registro Selecionado</button>
-          <button type="button" onclick="exportarPDF()" class="btn-export btn-pdf">📄 Relatório PDF (Filtrado)</button>
+          <button type="button" onclick="sincronizarPendentesComGoogleSheets()" class="btn-export btn-sync-sheets">🔄 Sincronizar Planilha</button>
+          <button type="button" onclick="iniciarEdicaoPrimeiroRegistro()" class="btn-export btn-edit-top">✏️ Editar Selecionado</button>
+          <button type="button" onclick="exportarPDF()" class="btn-export btn-pdf">📄 Relatório PDF</button>
         </div>
       </div>
 
@@ -542,20 +717,21 @@
           <div class="form-group">
             <label for="filtro-checklist">Filtrar por Checklist / Módulo:</label>
             <select id="filtro-checklist" onchange="aplicarFiltros()">
-              <option value="TODOS">-- Todos os Módulos / Checklists --</option>
-              <option value="HVAC_B07A">1. HVAC B07A - 1º Piso</option>
-              <option value="HVAC_B07B">2. HVAC B07B - Prédio B07B</option>
-              <option value="HVAC_ROUTINE">3. Check-list Diário HVAC B07</option>
-              <option value="BWT_7A">4. Tratamento de Água BWT 7A</option>
-              <option value="BWT_7B">5. Tratamento de Água BWT 7B</option>
-              <option value="WWT">6. Estação WWT (Efluentes)</option>
-              <option value="SKIDS_B07">7. Skids Dosadores e Insumos B07 (CAG)</option>
-              <option value="STEAM_2">8. Sistema de Vapor Nº 2 (Form 227)</option>
-              <option value="GENERATORS">9. Inspeção de Geradores 7F</option>
-              <option value="ELEC_GROUND">10. Salas Elétricas Térreo</option>
-              <option value="ELEC_PISO3">11. Salas Elétricas Piso 3</option>
-              <option value="B14">12. Rotina Diária B14</option>
-              <option value="MAINT_FAILURES">13. Manutenção & Leitor QR Code</option>
+              <option value="TODOS">-- Todos os Módulos (1 a 12) --</option>
+              <optgroup label="📋 MÓDULOS DE INSPEÇÃO OPERACIONAL">
+                <option value="HVAC_B07A">1. HVAC B07A - 1º Piso</option>
+                <option value="HVAC_B07B">2. HVAC B07B - Prédio B07B</option>
+                <option value="HVAC_ROUTINE">3. Check-list Diário HVAC B07</option>
+                <option value="BWT_7A">4. Tratamento de Água BWT 7A</option>
+                <option value="BWT_7B">5. Tratamento de Água BWT 7B</option>
+                <option value="WWT">6. Estação WWT (Efluentes)</option>
+                <option value="SKIDS_B07">7. Skids Dosadores e Insumos B07 (CAG)</option>
+                <option value="STEAM_2">8. Sistema de Vapor Nº 2 (Form 227)</option>
+                <option value="GENERATORS">9. Inspeção de Geradores 7F</option>
+                <option value="ELEC_GROUND">10. Salas Elétricas Térreo</option>
+                <option value="ELEC_PISO3">11. Salas Elétricas Piso 3</option>
+                <option value="B14">12. Rotina Diária B14</option>
+              </optgroup>
             </select>
           </div>
 
@@ -594,11 +770,44 @@
   </div>
 
   <script>
-    const CHAVE_STORAGE = "hemobras_unificado_master_v39";
+    const CHAVE_STORAGE = "hemobras_unificado_master_v44";
+    const LINK_APPS_SCRIPT_MODULO13 = "https://script.google.com/macros/s/AKfycbyxPJaxKDPTDk6LWgPbz-2I7wHoRPzE-TAYUDolF3K6z0vQubMy7BtlUbdnmJvPai_MlQ/exec";
+    
+    // URL Web App do Google Apps Script conectada à Planilha "Checklist Diários"
+    const LINK_APPS_SCRIPT_PLANILHA = "https://script.google.com/macros/s/AKfycbzuz7hdxu19_3eVPsPUtC0G-hXe5-yXNLDK7njTqPg9k4o3ejfABTiMx6TD7MhO3bo4Gg/exec";
+
     let leituras = [];
     let leiturasExibidas = [];
     let editandoId = null;
     let html5QrCodeScanner = null;
+
+    // Buffer de rascunho por módulo para gravação apenas quando o módulo estiver finalizado
+    let rascunhoModulo = {};
+
+    function selecionarAba(abaKey) {
+      const btnInspec = document.getElementById('tab-btn-inspec');
+      const btnMaint = document.getElementById('tab-btn-maint');
+      const secaoInspec = document.getElementById('secao-aba-inspec');
+      const secaoMaint = document.getElementById('secao-aba-maint');
+      const secaoIdent = document.getElementById('secao-identificacao');
+      const secaoHist = document.getElementById('secao-historico-unificado');
+
+      if (abaKey === 'INSPEC') {
+        btnInspec.classList.add('active-tab');
+        btnMaint.classList.remove('active-tab');
+        secaoInspec.style.display = 'block';
+        secaoMaint.style.display = 'none';
+        if (secaoIdent) secaoIdent.style.display = 'block';
+        if (secaoHist) secaoHist.style.display = 'block'; // Mostra o histórico na aba de inspeções
+      } else if (abaKey === 'MAINT') {
+        btnMaint.classList.add('active-tab');
+        btnInspec.classList.remove('active-tab');
+        secaoInspec.style.display = 'none';
+        secaoMaint.style.display = 'block';
+        if (secaoIdent) secaoIdent.style.display = 'none';
+        if (secaoHist) secaoHist.style.display = 'none'; // Oculta o histórico na aba da central de manutenção
+      }
+    }
 
     function criarBaseHVAC(prefixo, salasInfo, ahusCount, cruCount) {
       const data = {};
@@ -1104,16 +1313,16 @@
     };
 
     const modulosConfig = {
-      "HVAC_B07A": { titulo: "1. Monitoramento HVAC B07A - 1º Piso", temSubitem: true, isBWT: false, isElec: false, data: baseHVAC_B07A },
-      "HVAC_B07B": { titulo: "2. Monitoramento HVAC B07B", temSubitem: true, isBWT: false, isElec: false, data: baseHVAC_B07B },
+      "HVAC_B07A": { titulo: "1. HVAC B07A - 1º Piso", temSubitem: true, isBWT: false, isElec: false, data: baseHVAC_B07A },
+      "HVAC_B07B": { titulo: "2. HVAC B07B - Prédio B07B", temSubitem: true, isBWT: false, isElec: false, data: baseHVAC_B07B },
       "HVAC_ROUTINE": {
-        titulo: "3. Check-list Diário HVAC B07 (Dividido por Sub-sistema)", temSubitem: true, isBWT: false, isElec: false,
+        titulo: "3. Rotina Diária de Inspeção HVAC B07", temSubitem: true, isBWT: false, isElec: false,
         data: dataHVAC_Routine_Equipamentos, equipItems: hvacRoutineEquipItems
       },
       "BWT_7A": { titulo: "4. Tratamento de Água BWT 7A", temSubitem: true, isBWT: true, isElec: false, data: dataBWT_7A_Equipamentos },
       "BWT_7B": { titulo: "5. Tratamento de Água BWT 7B", temSubitem: true, isBWT: true, isElec: false, data: dataBWT_7B_Equipamentos },
       "WWT": {
-        titulo: "6. Estação de Tratamento de Efluentes WWT (Terça e Quinta)", temSubitem: true, isBWT: false, isElec: false,
+        titulo: "6. Estação de Tratamento de Efluentes WWT", temSubitem: true, isBWT: false, isElec: false,
         data: dataWWT_Equipamentos, items: wwtItensChecklist
       },
       "SKIDS_B07": {
@@ -1121,31 +1330,28 @@
         data: dataSkids_Equipamentos, items: skidsItensChecklist
       },
       "STEAM_2": {
-        titulo: "8. Inspeção Diária Sistema de Vapor Nº 2 (Dividido por Equipamento - Ref. Form Nº 227)",
+        titulo: "8. Inspeção Diária Sistema de Vapor Nº 2",
         temSubitem: true, isBWT: false, isElec: false, isSteam: true,
         data: dataSteam2, equipItems: steamEquipItems
       },
       "GENERATORS": {
-        titulo: "9. Inspeção de Geradores 7F (Ref. Captura 151753 - Dividido por Equipamento)",
+        titulo: "9. Inspeção de Geradores 7F",
         temSubitem: true, isBWT: false, isElec: true,
         data: dataGenerators, items: generatorItensCaptura
       },
       "ELEC_GROUND": {
-        titulo: "10. Salas Elétricas Térreo (Dividido por Sala e Equipamento)",
+        titulo: "10. Salas Elétricas Térreo",
         temSubitem: true, isBWT: false, isElec: true, isGroupedElec: true,
         dataGrouped: dataElec_Terreo_Grouped, items: elecItensCaptura
       },
       "ELEC_PISO3": {
-        titulo: "11. Salas Elétricas Piso 3 (Dividido por Sala e Equipamento)",
+        titulo: "11. Salas Elétricas Piso 3",
         temSubitem: true, isBWT: false, isElec: true, isGroupedElec: true,
         dataGrouped: dataElec_Piso3_Grouped, items: elecItensCaptura
       },
       "B14": {
-        titulo: "12. Rotina Diária B14 (Dividido por Sub-sistema)", temSubitem: true, isBWT: false, isElec: false,
+        titulo: "12. Rotina Diária B14", temSubitem: true, isBWT: false, isElec: false,
         data: dataB14_Equipamentos, equipItems: b14EquipItems
-      },
-      "MAINT_FAILURES": {
-        titulo: "13. Manutenção & Leitor QR Code / Painel de Falhas", temSubitem: false, isBWT: false, isElec: false, isMaint: true
       }
     };
 
@@ -1154,61 +1360,201 @@
       now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
       document.getElementById('data').value = now.toISOString().slice(0, 16);
       carregarHistoricoStorage();
+
+      // Ao abrir o sistema, tentar sincronizar registros pendentes se houver rede
+      if (navigator.onLine) {
+        sincronizarPendentesComGoogleSheets(true);
+      }
+
+      window.addEventListener('online', () => {
+        atualizarBadgeConexao(true);
+        sincronizarPendentesComGoogleSheets(true);
+      });
+
+      window.addEventListener('offline', () => {
+        atualizarBadgeConexao(false);
+      });
     });
+
+    function atualizarBadgeConexao(online) {
+      const ico = document.getElementById('icone-conexao');
+      const txt = document.getElementById('texto-conexao');
+      if (!ico || !txt) return;
+
+      if (online) {
+        ico.textContent = '🟢';
+        txt.textContent = 'Planilha Google Integrada (Online)';
+      } else {
+        ico.textContent = '🟠';
+        txt.textContent = 'Modo Offline (Salva localmente)';
+      }
+    }
+
+    /* ==========================================================================
+       INTEGRAÇÃO AUTOMÁTICA COM GOOGLE SHEETS
+       ========================================================================== */
+    async function enviarRegistroParaGoogleSheets(registro) {
+      if (!LINK_APPS_SCRIPT_PLANILHA || LINK_APPS_SCRIPT_PLANILHA.includes("SEU_LINK_AQUI")) {
+        console.warn("URL do Google Apps Script não configurada.");
+        return false;
+      }
+
+      try {
+        const payload = {
+          id: registro.id,
+          data: registro.data,
+          operador: registro.operador,
+          empresa: registro.empresa,
+          item: registro.moduloNome || registro.item,
+          resumo: registro.resumo,
+          obs: registro.obs
+        };
+
+        // Envio com no-cors para evitar restrições de cross-origin comuns no Apps Script
+        await fetch(LINK_APPS_SCRIPT_PLANILHA, {
+          method: "POST",
+          mode: "no-cors",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        registro.sincronizado = true;
+        salvarNoStorage();
+        return true;
+      } catch (err) {
+        console.error("Erro ao enviar para Google Sheets:", err);
+        registro.sincronizado = false;
+        salvarNoStorage();
+        return false;
+      }
+    }
+
+    async function sincronizarPendentesComGoogleSheets(silencioso = false) {
+      const pendentes = leituras.filter(r => !r.sincronizado);
+      if (pendentes.length === 0) {
+        if (!silencioso) alert("✅ Todos os registros já estão sincronizados com a planilha!");
+        return;
+      }
+
+      let enviados = 0;
+      for (const reg of pendentes) {
+        const sucesso = await enviarRegistroParaGoogleSheets(reg);
+        if (sucesso) enviados++;
+      }
+
+      aplicarFiltros();
+      if (!silencioso) {
+        alert(`🎉 Sincronização concluída: ${enviados} registro(s) enviados para a planilha.`);
+      }
+    }
+
+    function obterListaEquipamentosModulo(modKey) {
+      const cfg = modulosConfig[modKey];
+      if (!cfg || !cfg.temSubitem) return [];
+
+      let lista = [];
+      if (cfg.isGroupedElec && cfg.dataGrouped) {
+        Object.keys(cfg.dataGrouped).forEach(nomeSala => {
+          cfg.dataGrouped[nomeSala].forEach(equip => {
+            lista.push(`${nomeSala} | ${equip}`);
+          });
+        });
+      } else if (cfg.data) {
+        lista = Object.keys(cfg.data);
+      }
+      return lista;
+    }
 
     function alternarModulo() {
       const modKey = document.getElementById('modulo').value;
       const secao = document.getElementById('secao-dinamica');
-      if (!modKey || !modulosConfig[modKey]) { secao.style.display = 'none'; return; }
+      
+      rascunhoModulo = {}; // Reinicia buffer do módulo
+
+      if (!modKey || !modulosConfig[modKey]) { 
+        secao.style.display = 'none'; 
+        return; 
+      }
 
       const cfg = modulosConfig[modKey];
       document.getElementById('titulo-modulo').textContent = cfg.titulo;
       secao.style.display = 'block';
 
       const subContainer = document.getElementById('container-subitem');
-      const subSelect = document.getElementById('subitem-select');
-      const containerMaint = document.getElementById('container-falhas-manutencao');
-      const containerTable = document.getElementById('container-tabela-padrao');
-      
-      if (cfg.isMaint) {
-        subContainer.style.display = 'none';
-        containerMaint.style.display = 'block';
-        containerTable.style.display = 'none';
-        return;
-      } else {
-        containerMaint.style.display = 'none';
-        containerTable.style.display = 'block';
-      }
+      const progressBox = document.getElementById('modulo-progress-box');
+      const btnStep = document.getElementById('btn-save-step');
 
       if (cfg.temSubitem) {
         subContainer.style.display = 'block';
-        subSelect.innerHTML = '<option value="">-- Selecione o Equipamento / Sub-sistema / Painel --</option>';
-
-        if (cfg.isGroupedElec && cfg.dataGrouped) {
-          Object.keys(cfg.dataGrouped).forEach(nomeSala => {
-            const group = document.createElement('optgroup');
-            group.label = `📍 ${nomeSala}`;
-            cfg.dataGrouped[nomeSala].forEach(equip => {
-              const opt = document.createElement('option');
-              opt.value = `${nomeSala} | ${equip}`;
-              opt.textContent = `${equip}`;
-              group.appendChild(opt);
-            });
-            subSelect.appendChild(group);
-          });
-        } else if (cfg.data) {
-          Object.keys(cfg.data).forEach(k => {
-            const opt = document.createElement('option');
-            opt.value = k;
-            opt.textContent = k.startsWith("A20") || k.startsWith("B10") || k.startsWith("B20") ? `Sala ${k}` : k;
-            subSelect.appendChild(opt);
-          });
-        }
+        progressBox.style.display = 'flex';
+        btnStep.style.display = 'inline-block';
+        
+        atualizarSelectEquipamentos(modKey);
       } else { 
         subContainer.style.display = 'none'; 
+        progressBox.style.display = 'none';
+        btnStep.style.display = 'none';
       }
 
       renderizarTabela(cfg);
+      atualizarBarraProgressoModulo();
+    }
+
+    function atualizarSelectEquipamentos(modKey) {
+      const subSelect = document.getElementById('subitem-select');
+      const cfg = modulosConfig[modKey];
+      if (!cfg) return;
+
+      subSelect.innerHTML = '<option value="">-- Selecione o Equipamento / Sub-sistema / Painel --</option>';
+
+      if (cfg.isGroupedElec && cfg.dataGrouped) {
+        Object.keys(cfg.dataGrouped).forEach(nomeSala => {
+          const group = document.createElement('optgroup');
+          group.label = `📍 ${nomeSala}`;
+          cfg.dataGrouped[nomeSala].forEach(equip => {
+            const fullVal = `${nomeSala} | ${equip}`;
+            const opt = document.createElement('option');
+            opt.value = fullVal;
+            const isDone = !!rascunhoModulo[fullVal];
+            opt.textContent = `${isDone ? '✅' : '⏳'} ${equip} ${isDone ? '(Inspecionado)' : ''}`;
+            group.appendChild(opt);
+          });
+          subSelect.appendChild(group);
+        });
+      } else if (cfg.data) {
+        Object.keys(cfg.data).forEach(k => {
+          const opt = document.createElement('option');
+          opt.value = k;
+          const isDone = !!rascunhoModulo[k];
+          const nomeExibicao = k.startsWith("A20") || k.startsWith("B10") || k.startsWith("B20") ? `Sala ${k}` : k;
+          opt.textContent = `${isDone ? '✅' : '⏳'} ${nomeExibicao} ${isDone ? '(Inspecionado)' : ''}`;
+          subSelect.appendChild(opt);
+        });
+      }
+    }
+
+    function atualizarBarraProgressoModulo() {
+      const modKey = document.getElementById('modulo').value;
+      const cfg = modulosConfig[modKey];
+      if (!cfg || !cfg.temSubitem) return;
+
+      const totalEquips = obterListaEquipamentosModulo(modKey);
+      const totalCount = totalEquips.length;
+      const doneCount = Object.keys(rascunhoModulo).length;
+      const pct = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
+
+      document.getElementById('progress-text-count').textContent = `${doneCount} de ${totalCount} Equipamentos Inspecionados`;
+      document.getElementById('progress-text-pct').textContent = `${pct}% Concluído`;
+      document.getElementById('progress-bar-fill').style.width = `${pct}%`;
+
+      if (pct === 100) {
+        document.getElementById('progress-text-pct').style.color = "#276749";
+        document.getElementById('progress-text-pct').textContent = `100% Concluído (Pronto para Gravar)`;
+      } else {
+        document.getElementById('progress-text-pct').style.color = "#800020";
+      }
     }
 
     function carregarSubitemSetpoints() {
@@ -1218,12 +1564,218 @@
 
       renderizarTabela(cfg, subKey);
 
-      if (cfg && cfg.temSubitem && !cfg.isBWT && !cfg.isElec && !cfg.isSteam && cfg.data && cfg.data[subKey] && Array.isArray(cfg.data[subKey])) {
+      // Se já foi preenchido anteriormente no rascunho, carregar os dados
+      if (rascunhoModulo[subKey]) {
+        restaurarValoresSubitem(rascunhoModulo[subKey]);
+      } else if (cfg && cfg.temSubitem && !cfg.isBWT && !cfg.isElec && !cfg.isSteam && cfg.data && cfg.data[subKey] && Array.isArray(cfg.data[subKey])) {
         const [p1, p2, p3, p4] = cfg.data[subKey];
         if (document.getElementById('sp-param1')) document.getElementById('sp-param1').value = p1;
         if (document.getElementById('sp-param2')) document.getElementById('sp-param2').value = p2;
         if (document.getElementById('sp-param3')) document.getElementById('sp-param3').value = p3;
         if (document.getElementById('sp-param4')) document.getElementById('sp-param4').value = p4;
+      }
+    }
+
+    function restaurarValoresSubitem(dados) {
+      if (!dados) return;
+      if (dados.bwtAct) {
+        dados.bwtAct.forEach((item, idx) => {
+          if (document.getElementById(`val-bwt-act-${idx}`)) document.getElementById(`val-bwt-act-${idx}`).value = item.val;
+          if (document.getElementById(`obs-bwt-act-${idx}`)) document.getElementById(`obs-bwt-act-${idx}`).value = item.obs;
+        });
+      }
+      if (dados.bwtParam) {
+        dados.bwtParam.forEach((item, idx) => {
+          if (document.getElementById(`lido-bwt-param-${idx}`)) document.getElementById(`lido-bwt-param-${idx}`).value = item.val;
+          if (document.getElementById(`obs-bwt-param-${idx}`)) document.getElementById(`obs-bwt-param-${idx}`).value = item.obs;
+        });
+      }
+      if (dados.check) {
+        dados.check.forEach((item, idx) => {
+          if (document.getElementById(`val-check-${idx}`)) document.getElementById(`val-check-${idx}`).value = item.val;
+          if (document.getElementById(`obs-check-${idx}`)) document.getElementById(`obs-check-${idx}`).value = item.obs;
+        });
+      }
+      if (dados.quant) {
+        if (document.getElementById('steam-p-agua')) document.getElementById('steam-p-agua').value = dados.quant.pAgua || '';
+        if (document.getElementById('steam-condut')) document.getElementById('steam-condut').value = dados.quant.condut || '';
+        if (document.getElementById('steam-dureza')) document.getElementById('steam-dureza').value = dados.quant.dureza || '';
+        if (document.getElementById('steam-temp-tq')) document.getElementById('steam-temp-tq').value = dados.quant.tempTQ || '';
+        if (document.getElementById('steam-temp-blowdown')) document.getElementById('steam-temp-blowdown').value = dados.quant.tempBlow || '';
+        if (document.getElementById('steam-eam-tag')) document.getElementById('steam-eam-tag').value = dados.quant.eamTag || '';
+        if (document.getElementById('steam-hh-mat')) document.getElementById('steam-hh-mat').value = dados.quant.hhMat || '';
+      }
+      if (dados.paramsHVAC) {
+        if (document.getElementById('lido-param1')) document.getElementById('lido-param1').value = dados.paramsHVAC.p1 || '';
+        if (document.getElementById('obs-param1')) document.getElementById('obs-param1').value = dados.paramsHVAC.o1 || '';
+        if (document.getElementById('lido-param2')) document.getElementById('lido-param2').value = dados.paramsHVAC.p2 || '';
+        if (document.getElementById('obs-param2')) document.getElementById('obs-param2').value = dados.paramsHVAC.o2 || '';
+        if (document.getElementById('lido-param3')) document.getElementById('lido-param3').value = dados.paramsHVAC.p3 || '';
+        if (document.getElementById('obs-param3')) document.getElementById('obs-param3').value = dados.paramsHVAC.o3 || '';
+        if (document.getElementById('lido-param4')) document.getElementById('lido-param4').value = dados.paramsHVAC.p4 || '';
+        if (document.getElementById('obs-param4')) document.getElementById('obs-param4').value = dados.paramsHVAC.o4 || '';
+      }
+    }
+
+    function capturarDadosEquipamentoAtual() {
+      const modKey = document.getElementById('modulo').value;
+      const subKey = document.getElementById('subitem-select').value;
+      const cfg = modulosConfig[modKey];
+
+      if (!subKey || !cfg) return null;
+
+      let subData = { itemKey: subKey, textoFormatado: "" };
+      let itensDetalhados = [];
+
+      if (cfg.isBWT) {
+        const equipData = cfg.data[subKey] || { atividades: [], params: [] };
+        let bwtAct = [], bwtParam = [];
+
+        if (equipData.atividades && equipData.atividades.length > 0) {
+          itensDetalhados.push(`• ATIVIDADES DE INSPEÇÃO (${subKey}):`);
+          equipData.atividades.forEach((itemText, idx) => {
+            const val = document.getElementById(`val-bwt-act-${idx}`)?.value || "N/A";
+            const obs = document.getElementById(`obs-bwt-act-${idx}`)?.value || "";
+            bwtAct.push({ val, obs });
+            let text = `  ${idx + 1}. ${itemText}: ${val}`;
+            if (obs.trim() !== "") { text += ` — Obs: ${obs.trim()}`; }
+            itensDetalhados.push(text);
+          });
+        }
+
+        if (equipData.params && equipData.params.length > 0) {
+          itensDetalhados.push(`• PARÂMETROS DE QUALIDADE DA ÁGUA (${subKey}):`);
+          equipData.params.forEach(([paramTag, limit, unid], idx) => {
+            const val = document.getElementById(`lido-bwt-param-${idx}`)?.value || "N/I";
+            const obs = document.getElementById(`obs-bwt-param-${idx}`)?.value || "";
+            bwtParam.push({ val, obs });
+            let text = `  • ${paramTag}: ${val} ${unid} (Limite: ${limit})`;
+            if (obs.trim() !== "") { text += ` — Obs: ${obs.trim()}`; }
+            itensDetalhados.push(text);
+          });
+        }
+        subData.bwtAct = bwtAct;
+        subData.bwtParam = bwtParam;
+
+      } else if (cfg.isSteam) {
+        const pAgua = document.getElementById('steam-p-agua')?.value || '';
+        const condut = document.getElementById('steam-condut')?.value || '';
+        const dureza = document.getElementById('steam-dureza')?.value || '';
+        const tempTQ = document.getElementById('steam-temp-tq')?.value || '';
+        const tempBlow = document.getElementById('steam-temp-blowdown')?.value || '';
+        const eamTag = document.getElementById('steam-eam-tag')?.value || '';
+        const hhMat = document.getElementById('steam-hh-mat')?.value || '';
+
+        subData.quant = { pAgua, condut, dureza, tempTQ, tempBlow, eamTag, hhMat };
+
+        if (pAgua || condut || dureza || tempTQ) {
+          itensDetalhados.push("• PARÂMETROS OPERACIONAIS / QUÍMICOS:");
+          if (pAgua) itensDetalhados.push(`  - Pressão de Água: ${pAgua} kgf/cm²`);
+          if (condut) itensDetalhados.push(`  - Condutividade: ${condut} µS/cm`);
+          if (dureza) itensDetalhados.push(`  - Dureza: ${dureza} ppm`);
+          if (tempTQ) itensDetalhados.push(`  - Temp. TQ Água: ${tempTQ} °C`);
+        }
+        if (tempBlow || eamTag || hhMat) {
+          itensDetalhados.push("• BLOWDOWN & REGISTRO DE ANOMALIAS:");
+          if (tempBlow) itensDetalhados.push(`  - Temp. Blowdown: ${tempBlow} °C`);
+          if (eamTag) itensDetalhados.push(`  - EAM/TAG & Ordem: ${eamTag}`);
+          if (hhMat) itensDetalhados.push(`  - H/H & Material: ${hhMat}`);
+        }
+
+        const itemsList = cfg.equipItems[subKey] || [];
+        let check = [];
+        itensDetalhados.push(`• CHECKLIST OPERACIONAL (${subKey}):`);
+        itemsList.forEach((itemText, idx) => {
+          const val = document.getElementById(`val-check-${idx}`)?.value || "N/A";
+          const obs = document.getElementById(`obs-check-${idx}`)?.value || "";
+          check.push({ val, obs });
+          let text = `  ${idx + 1}. ${itemText}: ${val}`;
+          if (obs.trim() !== "") { text += ` — Obs: ${obs.trim()}`; }
+          itensDetalhados.push(text);
+        });
+        subData.check = check;
+
+      } else if (cfg.equipItems) {
+        const itemsList = cfg.equipItems[subKey] || [];
+        let check = [];
+        itensDetalhados.push(`• CHECKLIST OPERACIONAL (${subKey}):`);
+        itemsList.forEach((itemText, idx) => {
+          const val = document.getElementById(`val-check-${idx}`)?.value || "N/A";
+          const obs = document.getElementById(`obs-check-${idx}`)?.value || "";
+          check.push({ val, obs });
+          let text = `  ${idx + 1}. ${itemText}: ${val}`;
+          if (obs.trim() !== "") { text += ` — Obs: ${obs.trim()}`; }
+          itensDetalhados.push(text);
+        });
+        subData.check = check;
+
+      } else if (cfg.isElec || (cfg.items && cfg.temSubitem)) {
+        let check = [];
+        cfg.items.forEach((itemText, idx) => {
+          const val = document.getElementById(`val-check-${idx}`)?.value || "N/A";
+          const obs = document.getElementById(`obs-check-${idx}`)?.value || "";
+          check.push({ val, obs });
+          let text = `${idx + 1}. ${itemText}: ${val}`;
+          if (obs.trim() !== "") { text += ` — Obs: ${obs.trim()}`; }
+          itensDetalhados.push(text);
+        });
+        subData.check = check;
+
+      } else if (cfg.temSubitem) {
+        const isCRU = subKey.startsWith("CRU-");
+        const p1 = document.getElementById('lido-param1')?.value || "N/I";
+        const o1 = document.getElementById('obs-param1')?.value || "";
+        const p2 = document.getElementById('lido-param2')?.value || "N/I";
+        const o2 = document.getElementById('obs-param2')?.value || "";
+        const p3 = document.getElementById('lido-param3')?.value || "N/I";
+        const o3 = document.getElementById('obs-param3')?.value || "";
+        const p4 = document.getElementById('lido-param4')?.value || "N/I";
+        const o4 = document.getElementById('obs-param4')?.value || "";
+
+        subData.paramsHVAC = { p1, o1, p2, o2, p3, o3, p4, o4 };
+
+        if (isCRU) {
+          itensDetalhados.push(`• Pressão de Sucção: ${p1} psi${o1.trim() ? ' — Obs: ' + o1.trim() : ''}`);
+          itensDetalhados.push(`• Temperatura: ${p2} °C${o2.trim() ? ' — Obs: ' + o2.trim() : ''}`);
+          itensDetalhados.push(`• Pressão de Descarga: ${p3} psi${o3.trim() ? ' — Obs: ' + o3.trim() : ''}`);
+          itensDetalhados.push(`• Superaquecimento Compressor: ${p4} °C${o4.trim() ? ' — Obs: ' + o4.trim() : ''}`);
+        } else {
+          itensDetalhados.push(`• Vazão de Ar: ${p1} m³/h${o1.trim() ? ' — Obs: ' + o1.trim() : ''}`);
+          itensDetalhados.push(`• Temperatura: ${p2} °C${o2.trim() ? ' — Obs: ' + o2.trim() : ''}`);
+          itensDetalhados.push(`• Pressão Diferencial: ${p3} Pa${o3.trim() ? ' — Obs: ' + o3.trim() : ''}`);
+          itensDetalhados.push(`• Válvula / Umidade: ${p4}${o4.trim() ? ' — Obs: ' + o4.trim() : ''}`);
+        }
+      }
+
+      subData.textoFormatado = itensDetalhados.join("\n");
+      return subData;
+    }
+
+    function salvarEtapaEquipamento() {
+      const modKey = document.getElementById('modulo').value;
+      const subKey = document.getElementById('subitem-select').value;
+
+      if (!subKey) {
+        alert("Selecione um Equipamento / Sub-sistema para salvar a etapa.");
+        return;
+      }
+
+      const capturado = capturarDadosEquipamentoAtual();
+      if (capturado) {
+        rascunhoModulo[subKey] = capturado;
+        atualizarSelectEquipamentos(modKey);
+        atualizarBarraProgressoModulo();
+
+        // Tentar selecionar o próximo equipamento pendente automaticamente
+        const listaEquips = obterListaEquipamentosModulo(modKey);
+        const pendente = listaEquips.find(eq => !rascunhoModulo[eq]);
+
+        if (pendente) {
+          document.getElementById('subitem-select').value = pendente;
+          carregarSubitemSetpoints();
+        } else {
+          alert("🎉 Excelente! Todos os equipamentos deste módulo foram inspecionados. Clique em 'Finalizar e Gravar Módulo Completo' para concluir o registro.");
+        }
       }
     }
 
@@ -1236,8 +1788,6 @@
       thead.innerHTML = ""; tbody.innerHTML = "";
       containerQuant.style.display = "none";
       rowQuant.innerHTML = "";
-
-      if (cfg.isMaint) return;
 
       if (cfg.isBWT) {
         if (!selectedItem) {
@@ -1457,7 +2007,7 @@
       }
     }
 
-    /* FUNÇÕES DO LEITOR DE QR CODE COM ABERTURA DIRETA DE LINK */
+    /* FUNÇÕES DO LEITOR DE QR CODE COM ABERTURA DIRETA DE LINK (MÓDULO 13) */
     function iniciarLeitorQR() {
       const placeholder = document.getElementById('qr-placeholder-text');
       if (placeholder) placeholder.style.display = 'none';
@@ -1528,7 +2078,6 @@
         linkBtn.href = texto;
         linkBtn.style.display = 'inline-flex';
         
-        // Abrir diretamente em nova aba se solicitado
         if (abrirAutomatico) {
           window.open(texto, '_blank');
         }
@@ -1547,179 +2096,61 @@
       });
     }
 
-    function usarTAGNoRegistro() {
-      const txt = document.getElementById('qr-result-text').textContent;
-      if (!txt) return;
-      const obsInput = document.getElementById('observacoes-leitura');
-      if (obsInput) {
-        if (obsInput.value.trim() !== '') {
-          obsInput.value += ` | QR Code: ${txt}`;
-        } else {
-          obsInput.value = `QR Code: ${txt}`;
-        }
-        alert(`TAG/Código "${txt}" inserido no campo de Observações Gerais!`);
-      }
-    }
-
-    function salvarLeitura() {
+    /* ==========================================================================
+       GRAVAÇÃO E SINCRONIZAÇÃO AUTOMÁTICA COM GOOGLE SHEETS
+       ========================================================================== */
+    async function salvarLeituraModuloCompleto() {
       const operador = document.getElementById('operador').value;
       const empresa = document.getElementById('empresa').value;
       const rawData = document.getElementById('data').value;
       const modKey = document.getElementById('modulo').value;
 
       if (!operador || !empresa || !rawData || !modKey) { 
-        alert("Preencha todos os campos obrigatórios (Operador, Empresa, Data e Hora e Módulo)."); 
+        alert("Preencha todos os campos obrigatórios (Operador, Empresa, Data e Hora e Módulo de Inspeção)."); 
         return; 
       }
 
-      const dataFormatada = rawData.replace("T", " ");
       const cfg = modulosConfig[modKey];
-      let detalheItem = cfg.titulo;
+      const dataFormatada = rawData.replace("T", " ");
+
+      // Salvar a etapa do equipamento atualmente selecionado se houver sub-item
+      if (cfg.temSubitem) {
+        const subKey = document.getElementById('subitem-select').value;
+        if (subKey) {
+          const capturado = capturarDadosEquipamentoAtual();
+          if (capturado) {
+            rascunhoModulo[subKey] = capturado;
+          }
+        }
+      }
+
+      // Se o módulo tem sub-itens, verificar se todos foram concluídos
+      if (cfg.temSubitem) {
+        const totalEquips = obterListaEquipamentosModulo(modKey);
+        const doneCount = Object.keys(rascunhoModulo).length;
+
+        if (doneCount < totalEquips.length) {
+          const confirma = confirm(`⚠️ Atenção: Este módulo possui ${totalEquips.length} equipamentos/sub-itens no total, mas apenas ${doneCount} foram inspecionados.\n\nDeseja gravar o módulo assim mesmo com ressalva ou prefere cancelar para preencher o restante?`);
+          if (!confirma) {
+            return;
+          }
+        }
+      }
+
+      const nomeModuloPrincipal = cfg.titulo;
+      let detalheItem = nomeModuloPrincipal;
       let itensDetalhados = [];
 
-      if (cfg.isMaint) {
-        detalheItem = "13. Manutenção & Leitor QR Code / Painel de Falhas";
+      if (cfg.temSubitem) {
+        detalheItem += ` (Módulo Completo - ${Object.keys(rascunhoModulo).length} Equipamentos)`;
         
-        const qrTxt = document.getElementById('qr-result-text')?.textContent;
-        if (qrTxt && qrTxt.trim() !== "") {
-          itensDetalhados.push(`• Leitura de QR Code (Scanner): ${qrTxt.trim()}`);
-        }
-        
-        itensDetalhados.push("• Painel da Manutenção - Falhas Abertas: https://script.google.com/macros/s/AKfycbzR0NMJL2R2wHRNrn46J0Sz8o3kvWvI27HAUP3KVSAqGXlUi3XWSdIZr36YsW7ZCjAO0w/exec");
-        itensDetalhados.push("• Ação: Registro/consulta realizada através do módulo de Manutenção & QR Code.");
-
-      } else if (cfg.isBWT) {
-        const subKey = document.getElementById('subitem-select').value;
-        if (!subKey) { alert("Selecione o Equipamento ou Seção do BWT."); return; }
-        detalheItem += ` - ${subKey}`;
-
-        const equipData = cfg.data[subKey] || { atividades: [], params: [] };
-
-        if (equipData.atividades && equipData.atividades.length > 0) {
-          itensDetalhados.push(`• ATIVIDADES DE INSPEÇÃO (${subKey}):`);
-          equipData.atividades.forEach((itemText, idx) => {
-            const val = document.getElementById(`val-bwt-act-${idx}`)?.value || "N/A";
-            const obs = document.getElementById(`obs-bwt-act-${idx}`)?.value;
-            let text = `  ${idx + 1}. ${itemText}: ${val}`;
-            if (obs && obs.trim() !== "") { text += ` — Obs: ${obs.trim()}`; }
-            itensDetalhados.push(text);
-          });
-        }
-
-        if (equipData.params && equipData.params.length > 0) {
-          itensDetalhados.push(`• PARÂMETROS DE QUALIDADE DA ÁGUA (${subKey}):`);
-          equipData.params.forEach(([paramTag, limit, unid], idx) => {
-            const val = document.getElementById(`lido-bwt-param-${idx}`)?.value || "N/I";
-            const obs = document.getElementById(`obs-bwt-param-${idx}`)?.value;
-            let text = `  • ${paramTag}: ${val} ${unid} (Limite: ${limit})`;
-            if (obs && obs.trim() !== "") { text += ` — Obs: ${obs.trim()}`; }
-            itensDetalhados.push(text);
-          });
-        }
-
-      } else if (cfg.isSteam) {
-        const subKey = document.getElementById('subitem-select').value;
-        if (!subKey) { alert("Selecione o Equipamento do Sistema de Vapor."); return; }
-        detalheItem += ` - ${subKey}`;
-
-        const pAgua = document.getElementById('steam-p-agua')?.value;
-        const condut = document.getElementById('steam-condut')?.value;
-        const dureza = document.getElementById('steam-dureza')?.value;
-        const tempTQ = document.getElementById('steam-temp-tq')?.value;
-        const tempBlow = document.getElementById('steam-temp-blowdown')?.value;
-        const eamTag = document.getElementById('steam-eam-tag')?.value;
-        const hhMat = document.getElementById('steam-hh-mat')?.value;
-
-        if (pAgua || condut || dureza || tempTQ) {
-          itensDetalhados.push("• PARÂMETROS OPERACIONAIS / QUÍMICOS:");
-          if (pAgua) itensDetalhados.push(`  - Pressão de Água: ${pAgua} kgf/cm²`);
-          if (condut) itensDetalhados.push(`  - Condutividade: ${condut} µS/cm`);
-          if (dureza) itensDetalhados.push(`  - Dureza: ${dureza} ppm`);
-          if (tempTQ) itensDetalhados.push(`  - Temp. TQ Água: ${tempTQ} °C`);
-        }
-        if (tempBlow || eamTag || hhMat) {
-          itensDetalhados.push("• BLOWDOWN & REGISTRO DE ANOMALIAS:");
-          if (tempBlow) itensDetalhados.push(`  - Temp. Blowdown: ${tempBlow} °C`);
-          if (eamTag) itensDetalhados.push(`  - EAM/TAG & Ordem: ${eamTag}`);
-          if (hhMat) itensDetalhados.push(`  - H/H & Material: ${hhMat}`);
-        }
-
-        const itemsList = cfg.equipItems[subKey] || [];
-        itensDetalhados.push(`• CHECKLIST OPERACIONAL (${subKey}):`);
-        itemsList.forEach((itemText, idx) => {
-          const val = document.getElementById(`val-check-${idx}`)?.value || "N/A";
-          const obs = document.getElementById(`obs-check-${idx}`)?.value;
-          let text = `  ${idx + 1}. ${itemText}: ${val}`;
-          if (obs && obs.trim() !== "") { text += ` — Obs: ${obs.trim()}`; }
-          itensDetalhados.push(text);
+        Object.keys(rascunhoModulo).forEach(subK => {
+          const subObj = rascunhoModulo[subK];
+          itensDetalhados.push(`----------------------------------------`);
+          itensDetalhados.push(`📌 EQUIPAMENTO / SUB-SISTEMA: ${subK}`);
+          itensDetalhados.push(subObj.textoFormatado);
         });
 
-      } else if (cfg.equipItems) {
-        const subKey = document.getElementById('subitem-select').value;
-        if (!subKey) { alert("Selecione o Equipamento / Sub-sistema."); return; }
-        detalheItem += ` - ${subKey}`;
-
-        const itemsList = cfg.equipItems[subKey] || [];
-        itensDetalhados.push(`• CHECKLIST OPERACIONAL (${subKey}):`);
-        itemsList.forEach((itemText, idx) => {
-          const val = document.getElementById(`val-check-${idx}`)?.value || "N/A";
-          const obs = document.getElementById(`obs-check-${idx}`)?.value;
-          let text = `  ${idx + 1}. ${itemText}: ${val}`;
-          if (obs && obs.trim() !== "") { text += ` — Obs: ${obs.trim()}`; }
-          itensDetalhados.push(text);
-        });
-
-      } else if (cfg.isElec) {
-        const subKey = document.getElementById('subitem-select').value;
-        if (cfg.temSubitem && !subKey) { alert("Selecione a Sala e o Equipamento Elétrico."); return; }
-        if (subKey) { detalheItem += ` - ${subKey}`; }
-
-        cfg.items.forEach((itemText, idx) => {
-          const val = document.getElementById(`val-check-${idx}`)?.value || "N/A";
-          const obs = document.getElementById(`obs-check-${idx}`)?.value;
-          let text = `${idx + 1}. ${itemText}: ${val}`;
-          if (obs && obs.trim() !== "") { text += ` — Obs: ${obs.trim()}`; }
-          itensDetalhados.push(text);
-        });
-      } else if (cfg.items && cfg.temSubitem) {
-        const subKey = document.getElementById('subitem-select').value;
-        if (!subKey) { alert("Selecione o Equipamento."); return; }
-        detalheItem += ` - ${subKey}`;
-
-        cfg.items.forEach((itemText, idx) => {
-          const val = document.getElementById(`val-check-${idx}`)?.value || "N/A";
-          const obs = document.getElementById(`obs-check-${idx}`)?.value;
-          let text = `${idx + 1}. ${itemText}: ${val}`;
-          if (obs && obs.trim() !== "") { text += ` — Obs: ${obs.trim()}`; }
-          itensDetalhados.push(text);
-        });
-      } else if (cfg.temSubitem) {
-        const subKey = document.getElementById('subitem-select').value;
-        if (!subKey) { alert("Selecione o Equipamento ou Sala."); return; }
-        
-        detalheItem += ` - ${subKey}`;
-        const isCRU = subKey.startsWith("CRU-");
-        
-        const p1 = document.getElementById('lido-param1')?.value || "N/I";
-        const o1 = document.getElementById('obs-param1')?.value;
-        const p2 = document.getElementById('lido-param2')?.value || "N/I";
-        const o2 = document.getElementById('obs-param2')?.value;
-        const p3 = document.getElementById('lido-param3')?.value || "N/I";
-        const o3 = document.getElementById('obs-param3')?.value;
-        const p4 = document.getElementById('lido-param4')?.value || "N/I";
-        const o4 = document.getElementById('obs-param4')?.value;
-
-        if (isCRU) {
-          itensDetalhados.push(`• Pressão de Sucção: ${p1} psi${o1 && o1.trim() ? ' — Obs: ' + o1.trim() : ''}`);
-          itensDetalhados.push(`• Temperatura: ${p2} °C${o2 && o2.trim() ? ' — Obs: ' + o2.trim() : ''}`);
-          itensDetalhados.push(`• Pressão de Descarga: ${p3} psi${o3 && o3.trim() ? ' — Obs: ' + o3.trim() : ''}`);
-          itensDetalhados.push(`• Superaquecimento Compressor: ${p4} °C${o4 && o4.trim() ? ' — Obs: ' + o4.trim() : ''}`);
-        } else {
-          itensDetalhados.push(`• Vazão de Ar: ${p1} m³/h${o1 && o1.trim() ? ' — Obs: ' + o1.trim() : ''}`);
-          itensDetalhados.push(`• Temperatura: ${p2} °C${o2 && o2.trim() ? ' — Obs: ' + o2.trim() : ''}`);
-          itensDetalhados.push(`• Pressão Diferencial: ${p3} Pa${o3 && o3.trim() ? ' — Obs: ' + o3.trim() : ''}`);
-          itensDetalhados.push(`• Válvula / Umidade: ${p4}${o4 && o4.trim() ? ' — Obs: ' + o4.trim() : ''}`);
-        }
       } else {
         cfg.items.forEach((itemText, idx) => {
           const val = document.getElementById(`val-check-${idx}`)?.value || "N/A";
@@ -1733,38 +2164,67 @@
       const obsGeral = document.getElementById('observacoes-leitura').value || "-";
       const resumoValores = itensDetalhados.join("\n");
 
+      let regObj = null;
+
       if (editandoId !== null) {
         const index = leituras.findIndex(r => r.id === editandoId);
         if (index !== -1) {
-          leituras[index] = {
+          regObj = {
             id: editandoId,
             data: dataFormatada,
             operador,
             empresa,
             moduloKey: modKey,
+            moduloNome: nomeModuloPrincipal,
             item: detalheItem,
             resumo: resumoValores,
-            obs: obsGeral
+            obs: obsGeral,
+            sincronizado: false
           };
-          alert("Registro atualizado com sucesso!");
+          leituras[index] = regObj;
+          alert("✅ Registro do Módulo Completo atualizado com sucesso!");
         }
         cancelarEdicao();
       } else {
-        const reg = {
+        regObj = {
           id: Date.now(), 
           data: dataFormatada, 
           operador, 
           empresa, 
           moduloKey: modKey,
+          moduloNome: nomeModuloPrincipal,
           item: detalheItem, 
           resumo: resumoValores,
-          obs: obsGeral
+          obs: obsGeral,
+          sincronizado: false
         };
-        leituras.unshift(reg);
-        alert("Registro salvo com sucesso!");
+        leituras.unshift(regObj);
+        alert("🎉 Módulo Completo registrado localmente com sucesso!");
       }
 
+      // Salva no storage local como garantia offline
       salvarNoStorage();
+
+      // ========================================================================
+      // DISPARO AUTOMÁTICO DE SINCRONIZAÇÃO COM A PLANILHA GOOGLE
+      // ========================================================================
+      const btnSalvar = document.getElementById('btn-salvar-main');
+      const textoOriginal = btnSalvar.textContent;
+      btnSalvar.textContent = "⏳ Enviando para Planilha Google...";
+      btnSalvar.disabled = true;
+
+      try {
+        await enviarRegistroParaGoogleSheets(regObj);
+      } finally {
+        btnSalvar.textContent = textoOriginal;
+        btnSalvar.disabled = false;
+      }
+      
+      // Limpar rascunho do módulo
+      rascunhoModulo = {};
+      atualizarSelectEquipamentos(modKey);
+      atualizarBarraProgressoModulo();
+      
       aplicarFiltros();
     }
 
@@ -1773,11 +2233,13 @@
       if (!reg) return;
 
       editandoId = reg.id;
-      document.getElementById('info-registro-edicao').textContent = `${reg.item} (${reg.operador} - ${reg.data})`;
+      document.getElementById('info-registro-edicao').textContent = `${reg.moduloNome || reg.item} (${reg.operador} - ${reg.data})`;
       document.getElementById('banner-edicao').style.display = 'flex';
 
+      selecionarAba('INSPEC');
+
       const btnSalvar = document.getElementById('btn-salvar-main');
-      btnSalvar.textContent = "💾 Salvar Alterações no Registro";
+      btnSalvar.textContent = "💾 Salvar Alterações no Registro do Módulo";
       btnSalvar.classList.add('modo-edicao');
 
       document.getElementById('operador').value = reg.operador;
@@ -1787,19 +2249,6 @@
       if (reg.moduloKey) {
         document.getElementById('modulo').value = reg.moduloKey;
         alternarModulo();
-
-        if (reg.moduloKey !== "MAINT_FAILURES") {
-          const cfg = modulosConfig[reg.moduloKey];
-          if (cfg && cfg.temSubitem) {
-            const partesItem = reg.item.split(" - ");
-            if (partesItem.length > 1) {
-              const subName = partesItem.slice(1).join(" - ");
-              const subSelect = document.getElementById('subitem-select');
-              subSelect.value = subName;
-              carregarSubitemSetpoints();
-            }
-          }
-        }
       }
 
       document.getElementById('observacoes-leitura').value = reg.obs || "";
@@ -1821,7 +2270,7 @@
       document.getElementById('banner-edicao').style.display = 'none';
 
       const btnSalvar = document.getElementById('btn-salvar-main');
-      btnSalvar.textContent = "Registrar Leitura no Módulo";
+      btnSalvar.textContent = "🏁 Finalizar e Gravar Módulo Completo & Sincronizar";
       btnSalvar.classList.remove('modo-edicao');
 
       document.getElementById('observacoes-leitura').value = "";
@@ -1916,6 +2365,7 @@
       } 
     }
 
+    /* RENDERIZAÇÃO: LISTAR APENAS O NOME DO MÓDULO E LIMITAR AOS 5 ÚLTIMOS */
     function renderizarHistorico(lista = leituras) {
       const div = document.getElementById('historico'); 
       div.innerHTML = "";
@@ -1923,27 +2373,30 @@
         div.innerHTML = '<p class="empty-msg">Nenhum registro encontrado para os filtros selecionados.</p>'; 
         return; 
       }
-      lista.forEach(reg => {
+
+      // Limita a exibição aos 5 últimos registros
+      const ultimos5 = lista.slice(0, 5);
+
+      ultimos5.forEach(reg => {
         const item = document.createElement('div');
         item.className = 'historico-item';
-        
-        let resumoFormatted = (reg.resumo || "")
-          .replace(/\n/g, "<br>")
-          .replace(/ \| /g, "<br>");
 
-        // Formatar links para serem clicáveis no histórico
-        if (resumoFormatted.includes("https://")) {
-          resumoFormatted = resumoFormatted.replace(/(https:\/\/[^\s<]+)/g, '<a href="\$1" target="_blank" style="color:#2b6cb0; font-weight:bold; text-decoration:underline;">🔗 \$1</a>');
-        }
+        // Mostra apenas o nome do módulo principal de inspeção
+        const nomeExibicao = reg.moduloNome || reg.item.split(" (Módulo")[0];
+
+        const badgeSincronizacao = reg.sincronizado 
+          ? '<span class="badge-nuvem badge-sincronizado">☁️ Na Planilha</span>' 
+          : '<span class="badge-nuvem badge-pendente">⏳ Pendente Planilha</span>';
 
         item.innerHTML = `
           <div class="historico-header-actions">
-            <strong>${reg.item}</strong>
+            <div>
+              <strong>${nomeExibicao}</strong>
+              ${badgeSincronizacao}
+            </div>
             <button type="button" class="btn-item-edit" onclick="editarRegistro(${reg.id})">✏️ Editar</button>
           </div>
           <small>Operador: <em>${reg.operador}</em> | Empresa: <em>${reg.empresa}</em> (${reg.data})</small>
-          <div class="historico-detalhes">${resumoFormatted}</div>
-          ${reg.obs && reg.obs !== '-' ? `<small style="margin-top:6px; display:block;"><strong>Obs Geral / Livro de Ocorrência:</strong> \${reg.obs}</small>` : ''}
         `;
         div.appendChild(item);
       });
@@ -1962,7 +2415,7 @@
 
       doc.setFontSize(14); 
       doc.setTextColor(128, 0, 32);
-      doc.text("HEMOBRÁS - RELATÓRIO DINÂMICO DE INSPEÇÃO, UTILIDADES E MANUTENÇÃO", 14, 15);
+      doc.text("HEMOBRÁS - RELATÓRIO DINÂMICO DE INSPEÇÃO OPERACIONAL", 14, 15);
       
       doc.setFontSize(9); 
       doc.setTextColor(50);
@@ -1975,7 +2428,7 @@
         i.data, 
         i.operador, 
         i.empresa, 
-        i.item, 
+        i.moduloNome || i.item, 
         (i.resumo || "").replace(/<br\s*\/?>/gi, "\n").replace(/ \| /g, "\n")
       ]);
 
