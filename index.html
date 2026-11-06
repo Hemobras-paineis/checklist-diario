@@ -2,8 +2,8 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistema Unificado de Inspeção & Manutenção - Hemobrás</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Checklists de Inspeção Operacional - Hemobrás</title>
 
   <!-- Bibliotecas de Exportação (PDF e Leitor QR Code) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -105,6 +105,11 @@
       gap: 8px;
       transition: all 0.2s ease;
       box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    #tab-btn-maint[hidden],
+    #secao-aba-maint[hidden] {
+      display: none !important;
     }
 
     .tab-btn.active-tab {
@@ -513,22 +518,112 @@
     }
 
     @media (max-width: 599px) {
-      body { padding: 10px; }
-      header { padding: 14px 12px; }
-      .header-content { gap: 10px; }
-      .header-text { min-width: 0; }
-      .header-text h1 { font-size: 1.25rem; overflow-wrap: anywhere; }
+      html { -webkit-text-size-adjust: 100%; }
+      body {
+        padding: max(8px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) max(8px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
+        overflow-x: hidden;
+      }
+      .container { min-width: 0; }
+      header { padding: 14px 10px; margin-bottom: 12px; }
+      .header-content { gap: 8px; }
+      .logo-img { max-height: 44px; }
+      .header-text { min-width: 0; width: 100%; }
+      .header-text h1 { font-size: clamp(1.1rem, 5vw, 1.3rem); line-height: 1.25; overflow-wrap: anywhere; }
       .header-text h2 { font-size: 0.82rem; line-height: 1.4; }
-      .sync-status-badge { max-width: 100%; white-space: normal; }
+      .sync-status-badge { max-width: 100%; white-space: normal; line-height: 1.35; }
       .nav-tabs-container { flex-direction: column; }
-      .tab-btn { min-width: 0; width: 100%; padding: 12px; font-size: 0.92rem; }
-      .card { padding: 14px; }
+      .tab-btn { min-width: 0; width: 100%; min-height: 48px; padding: 12px; font-size: 0.92rem; }
+      .card { padding: 12px; margin-bottom: 12px; }
+      .card h3 { font-size: 1rem; line-height: 1.35; }
+      .form-row { gap: 4px; }
       .form-group { min-width: 0; flex-basis: 100%; }
+      .form-group label { font-size: 0.88rem; line-height: 1.35; }
+      input, select { min-height: 48px; }
+      .modulo-progress-header { font-size: 0.86rem; }
+      .btn-action-container { flex-direction: column; }
       .banner-edicao { align-items: stretch; flex-direction: column; gap: 10px; }
-      .btn-cancelar { min-height: 44px; }
-      .btn-step, .btn-primary { min-width: 100%; }
-      .btn-export { min-width: 100%; }
-      .historico-header-actions { align-items: flex-start; }
+      .btn-cancelar, .btn-item-edit { min-height: 44px; }
+      .btn-step, .btn-primary { width: 100%; min-width: 0; min-height: 48px; }
+      .historico-header-actions { align-items: stretch; }
+      .export-buttons { flex-direction: column; }
+      .btn-export { width: 100%; min-width: 0; min-height: 48px; }
+      .filter-card { padding: 10px; }
+      .filter-summary { overflow-wrap: anywhere; line-height: 1.5; }
+      .historico-item { overflow-wrap: anywhere; }
+      .historico-header-actions > * { max-width: 100%; }
+      .table-container {
+        max-width: 100%;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        scrollbar-width: thin;
+        scrollbar-color: #800020 #f1f1f1;
+      }
+      .data-table { min-width: 560px; }
+      .data-table th, .data-table td { padding: 9px 7px; }
+      .data-table input, .data-table select { min-width: 112px; }
+      .data-table.mobile-card-layout {
+        width: 100%;
+        min-width: 0;
+        border-collapse: separate;
+        border-spacing: 0 8px;
+      }
+      .mobile-card-layout thead { display: none; }
+      .mobile-card-layout tbody { display: block; }
+      .mobile-card-layout tr.mobile-column-labels { display: none; }
+      .mobile-card-layout tr.mobile-section-row,
+      .mobile-card-layout tr.mobile-data-row,
+      .mobile-card-layout tr.mobile-note-row { display: block; }
+      .mobile-card-layout tr.mobile-section-row th {
+        display: block;
+        width: 100%;
+        border: 0;
+        border-radius: 6px;
+      }
+      .mobile-card-layout tr.mobile-data-row {
+        margin-bottom: 8px;
+        padding: 4px 10px;
+        background: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+      }
+      .mobile-card-layout tr.mobile-data-row td {
+        display: block;
+        width: 100%;
+        padding: 9px 0;
+        border: 0;
+        border-bottom: 1px solid #edf0f2;
+        overflow-wrap: anywhere;
+      }
+      .mobile-card-layout tr.mobile-data-row td:last-child { border-bottom: 0; }
+      .mobile-card-layout tr.mobile-data-row td::before {
+        display: block;
+        margin-bottom: 4px;
+        color: #555;
+        font-size: 0.76rem;
+        font-weight: 700;
+        line-height: 1.3;
+        content: attr(data-label);
+      }
+      .mobile-card-layout tr.mobile-data-row td:empty::before { content: attr(data-label); }
+      .mobile-card-layout tr.mobile-data-row input,
+      .mobile-card-layout tr.mobile-data-row select {
+        width: 100%;
+        min-width: 0;
+      }
+      .mobile-card-layout tr.mobile-note-row td {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        background: #fff;
+        overflow-wrap: anywhere;
+      }
+      .table-container.mobile-cards-container {
+        overflow: visible;
+        border: 0;
+      }
     }
 
     @media (min-width: 600px) {
@@ -547,8 +642,8 @@
       <div class="header-content">
         <img src="logo_hemo.jpeg" alt="Logo Hemobrás" class="logo-img">
         <div class="header-text">
-          <h1>Hemobrás - Sistema Unificado de Inspeção & Manutenção</h1>
-          <h2>Módulos Operacionais | Central de Manutenção, QR Code & Web App</h2>
+          <h1>Hemobrás - Checklists de Inspeção Operacional</h1>
+          <h2>Módulos Operacionais | Inspeção Diária</h2>
           <div id="badge-status-conexao" class="sync-status-badge">
             <span id="icone-conexao">🟢</span> <span id="texto-conexao">Planilha Google Integrada</span>
           </div>
@@ -561,7 +656,7 @@
       <button type="button" id="tab-btn-inspec" onclick="selecionarAba('INSPEC')" class="tab-btn active-tab">
         📋 Checklists de Inspeção Operacional
       </button>
-      <button type="button" id="tab-btn-maint" onclick="selecionarAba('MAINT')" class="tab-btn maint-tab">
+      <button type="button" id="tab-btn-maint" onclick="selecionarAba('MAINT')" class="tab-btn maint-tab" hidden>
         🔧 Central de Manutenção & QR Code
       </button>
     </div>
@@ -655,7 +750,7 @@
       </div>
 
       <!-- ABA 2: CENTRAL DE MANUTENÇÃO (LEITOR DE QR CODE & WEB APPS) -->
-      <div id="secao-aba-maint" style="display: none;">
+      <div id="secao-aba-maint" style="display: none;" hidden>
         <section class="card" style="border-top: 4px solid #276749;">
           <h3 class="maint-header">🔧 Central de Manutenção (Leitor de QR Code & Web Apps)</h3>
           
@@ -931,13 +1026,15 @@
       ]
     };
 
+    const referenciaCondutividadeWFI = "Referência de condutividade da água para injetáveis (Farmacopeia Brasileira): 0 °C = 0,6; 5 °C = 0,8; 10 °C = 0,9; 15 °C = 1,0; 20 °C = 1,1; 25 °C = 1,3; 30 °C = 1,4; 35 °C = 1,5; 40 °C = 1,7; 45 °C = 1,8; 50 °C = 1,9; 55 °C = 2,1; 60 °C = 2,2; 65 °C = 2,4; 70 °C = 2,5; 75–90 °C = 2,7; 95 °C = 2,9; 100 °C = 3,1 µS/cm.";
+
     const dataBWT_7A_Equipamentos = {
       "DUOSMOSTIL": {
         atividades: [
-          "1. Verificar a nível e alimentação dos químicos da máquina (metabissulfito de sódio, hidróxido de sódio e sal)",
-          "2. Verificar funcionamento de todas as bombas e válvulas pneumáticas do sistema",
-          "3. Verificar vazamentos de água em triclamps e juntas",
-          "4. Verificar alimentação de água gelada dos trocadores de calor (manômetros/pressão)"
+          "Verificar o nível e a alimentação dos químicos da máquina (metabissulfito de sódio, hidróxido de sódio e sal)",
+          "Verificar o funcionamento de todas as bombas e válvulas pneumáticas do sistema",
+          "Verificar vazamentos de água em triclamps e juntas",
+          "Verificar a alimentação de água gelada dos trocadores de calor (placas e tubos), os manômetros e anotar a pressão indicada"
         ],
         params: [
           ["Condutividade QE218A.6.1", "≤ 1,3 µS/cm (Farmacopeia BR)", "µS/cm"],
@@ -948,10 +1045,10 @@
       },
       "MULTISTILL": {
         atividades: [
-          "1. Verificar funcionamento de todas as bombas e válvulas pneumáticas do sistema",
-          "2. Verificar vazamentos de água em triclamps e juntas",
-          "3. Verificar alimentação de água gelada dos trocadores de calor (manômetros/pressão)",
-          "4. Verificar alimentação de vapor industrial nos sistemas (manômetros/pressão)"
+          "Verificar o funcionamento de todas as bombas e válvulas pneumáticas do sistema",
+          "Verificar vazamentos de água em triclamps e juntas",
+          "Verificar a alimentação de água gelada dos trocadores de calor (placas e tubos), os manômetros e anotar a pressão indicada",
+          "Verificar a alimentação de vapor industrial, observar os manômetros e anotar a pressão indicada"
         ],
         params: [
           ["Condutividade QE438A.4.1", "≤ 1,3 µS/cm", "µS/cm"],
@@ -961,26 +1058,27 @@
       },
       "LOOPO": {
         atividades: [
-          "1. Verificar funcionamento de todas as bombas e válvulas pneumáticas do sistema",
-          "2. Verificar vazamentos de água em triclamps e juntas",
-          "3. Verificar alimentação de água gelada dos trocadores de calor (manômetros/pressão)",
-          "4. Verificar alimentação de vapor industrial nos sistemas (manômetros/pressão)"
+          "Verificar o funcionamento de todas as bombas e válvulas pneumáticas do sistema",
+          "Verificar vazamentos de água em triclamps e juntas",
+          "Verificar a alimentação de água gelada dos trocadores de calor (placas e tubos), os manômetros e anotar a pressão indicada",
+          "Verificar a alimentação de vapor industrial, observar os manômetros e anotar a pressão indicada"
         ],
         params: [
-          ["Condutividade QE846A.8.1", "≤ 1,3 µS/cm", "µS/cm"],
+          ["Condutividade QE846A.8.1", "Limite conforme temperatura da água (ver referência)", "µS/cm"],
           ["Temperatura TE846A.8.1", "Conforme processo", "°C"],
           ["TOC QE846A.6.1", "≤ 500 ppb", "ppb"],
           ["Condutividade QE846A.8.2", "≤ 1,3 µS/cm", "µS/cm"],
           ["Temperatura TE846A.8.2", "Conforme processo", "°C"],
           ["Temperatura TE561A.2.1", "Conforme processo", "°C"]
-        ]
+        ],
+        nota: referenciaCondutividadeWFI
       },
       "VAPOTRON": {
         atividades: [
-          "1. Verificar funcionamento de todas as bombas e válvulas pneumáticas do sistema",
-          "2. Verificar vazamentos de água em triclamps e juntas",
-          "3. Verificar alimentação de água gelada dos trocadores de calor (manômetros/pressão)",
-          "4. Verificar alimentação de vapor industrial nos sistemas (manômetros/pressão)"
+          "Verificar o funcionamento de todas as bombas e válvulas pneumáticas do sistema",
+          "Verificar vazamentos de água em triclamps e juntas",
+          "Verificar a alimentação de água gelada dos trocadores de calor (placas e tubos), os manômetros e anotar a pressão indicada",
+          "Verificar a alimentação de vapor industrial, observar os manômetros e anotar a pressão indicada"
         ],
         params: [
           ["Condutividade QE4366A.4.1", "Conforme especificação", "µS/cm"],
@@ -988,11 +1086,14 @@
           ["Pressão PT436A.3.1", "Conforme processo", "bar"]
         ]
       },
-      "FILTRO DE CARVÃO ATIVADO": {
+      "PRÉ-TRATAMENTO E QUALIDADE DA ÁGUA": {
         atividades: [],
         params: [
           ["Teor de Cloro Livre - Antes do Filtro", "< 0,1 ppm", "ppm"],
-          ["Teor de Cloro Livre - Após o Filtro", "0,00 ppm", "ppm"]
+          ["Teor de Cloro Livre - Após o Filtro", "0,00 ppm", "ppm"],
+          ["Teste de dureza - Antes do Abrandador", "Registrar resultado", "mg/L CaCO₃"],
+          ["Teste de dureza - Depois do Abrandador", "Registrar resultado", "mg/L CaCO₃"],
+          ["Outros parâmetros / observações", "Conforme necessidade", "—"]
         ]
       }
     };
@@ -1000,10 +1101,10 @@
     const dataBWT_7B_Equipamentos = {
       "OSMOTRON": {
         atividades: [
-          "1. Verificar a nível e alimentação dos químicos da máquina (metabissulfito de sódio, soda cáustica e sal)",
-          "2. Verificar funcionamento de todas as bombas e válvulas pneumáticas do sistema",
-          "3. Verificar vazamentos de água em triclamps e juntas",
-          "4. Verificar alimentação de água gelada dos trocadores de calor (manômetros/pressão)"
+          "Verificar o nível e a alimentação dos químicos da máquina (metabissulfito de sódio, soda cáustica e sal)",
+          "Verificar o funcionamento de todas as bombas e válvulas pneumáticas do sistema",
+          "Verificar vazamentos de água em triclamps e juntas",
+          "Verificar a alimentação de água gelada dos trocadores de calor (placas e tubos), os manômetros e anotar a pressão indicada"
         ],
         params: [
           ["Condutividade QE270A.6.1", "≤ 1,3 µS/cm (Farmacopeia BR)", "µS/cm"],
@@ -1015,10 +1116,11 @@
       },
       "LOOPO PW (845A)": {
         atividades: [
-          "1. Verificar funcionamento de todas as bombas e válvulas pneumáticas do sistema",
-          "2. Verificar vazamentos de água em triclamps e juntas",
-          "3. Verificar alimentação de água gelada dos trocadores de calor (manômetros/pressão)",
-          "4. Verificar se a ozonização do Loopo PW foi bem-sucedida na lista de alarmes (dia)"
+          "Verificar o funcionamento de todas as bombas e válvulas pneumáticas do sistema",
+          "Verificar vazamentos de água em triclamps e juntas",
+          "Verificar a alimentação de água gelada dos trocadores de calor (placas e tubos), os manômetros e anotar a pressão indicada",
+          "Verificar a alimentação de vapor industrial, observar os manômetros e anotar a pressão indicada",
+          "Verificar na lista diária de alarmes se a ozonização do Loopo PW foi bem-sucedida"
         ],
         params: [
           ["Condutividade QE845A.8.1", "≤ 1,3 µS/cm", "µS/cm"],
@@ -1028,10 +1130,10 @@
       },
       "MULTISTILL": {
         atividades: [
-          "1. Verificar funcionamento de todas as bombas e válvulas pneumáticas do sistema",
-          "2. Verificar vazamentos de água em triclamps e juntas",
-          "3. Verificar alimentação de água gelada dos trocadores de calor (manômetros/pressão)",
-          "4. Verificar alimentação de vapor industrial nos sistemas (manômetros/pressão)"
+          "Verificar o funcionamento de todas as bombas e válvulas pneumáticas do sistema",
+          "Verificar vazamentos de água em triclamps e juntas",
+          "Verificar a alimentação de água gelada dos trocadores de calor (placas e tubos), os manômetros e anotar a pressão indicada",
+          "Verificar a alimentação de vapor industrial, observar os manômetros e anotar a pressão indicada"
         ],
         params: [
           ["Cond. QE438B.4.1", "≤ 1,3 µS/cm", "µS/cm"],
@@ -1042,26 +1144,27 @@
       },
       "LOOPO WFI (846B)": {
         atividades: [
-          "1. Verificar funcionamento de todas as bombas e válvulas pneumáticas do sistema",
-          "2. Verificar vazamentos de água em triclamps e juntas",
-          "3. Verificar alimentação de água gelada dos trocadores de calor (manômetros/pressão)",
-          "4. Verificar alimentação de vapor industrial nos sistemas (manômetros/pressão)"
+          "Verificar o funcionamento de todas as bombas e válvulas pneumáticas do sistema",
+          "Verificar vazamentos de água em triclamps e juntas",
+          "Verificar a alimentação de água gelada dos trocadores de calor (placas e tubos), os manômetros e anotar a pressão indicada",
+          "Verificar a alimentação de vapor industrial, observar os manômetros e anotar a pressão indicada"
         ],
         params: [
-          ["Cond. QE846B.8.11", "≤ 1,3 µS/cm", "µS/cm"],
+          ["Cond. QE846B.8.11", "Limite conforme temperatura da água (ver referência)", "µS/cm"],
           ["Temp. TT846B.7.11", "Conforme processo", "°C"],
-          ["Cond. QE846B.8.1", "≤ 1,3 µS/cm", "µS/cm"],
+          ["Cond. QE846B.8.1", "Limite conforme temperatura da água (ver referência)", "µS/cm"],
           ["Temp TT846B.7.1", "Conforme processo", "°C"],
           ["TOC QE846B.6.1", "≤ 500 ppb", "ppb"],
           ["Temp. TE561B.2.1", "Conforme processo", "°C"]
-        ]
+        ],
+        nota: referenciaCondutividadeWFI
       },
       "VAPOTRON": {
         atividades: [
-          "1. Verificar funcionamento de todas as bombas e válvulas pneumáticas do sistema",
-          "2. Verificar vazamentos de água em triclamps e juntas",
-          "3. Verificar alimentação de água gelada dos trocadores de calor (manômetros/pressão)",
-          "4. Verificar alimentação de vapor industrial nos sistemas (manômetros/pressão)"
+          "Verificar o funcionamento de todas as bombas e válvulas pneumáticas do sistema",
+          "Verificar vazamentos de água em triclamps e juntas",
+          "Verificar a alimentação de água gelada dos trocadores de calor (placas e tubos), os manômetros e anotar a pressão indicada",
+          "Verificar a alimentação de vapor industrial, observar os manômetros e anotar a pressão indicada"
         ],
         params: [
           ["Condutividade QE436B.4.1", "Conforme especificação", "µS/cm"],
@@ -1069,12 +1172,123 @@
           ["Pressão PT436B.3.1", "Conforme processo", "bar"]
         ]
       },
-      "FILTRO DE CARVÃO ATIVADO": {
+      "PRÉ-TRATAMENTO E QUALIDADE DA ÁGUA": {
         atividades: [],
         params: [
           ["Teor de Cloro Livre - Antes do Filtro", "< 0,1 ppm", "ppm"],
-          ["Teor de Cloro Livre - Após o Filtro", "0,00 ppm", "ppm"]
+          ["Teor de Cloro Livre - Após o Filtro", "0,00 ppm", "ppm"],
+          ["Teste de dureza - Antes do Abrandador", "Registrar resultado", "mg/L CaCO₃"],
+          ["Teste de dureza - Depois do Abrandador", "Registrar resultado", "mg/L CaCO₃"],
+          ["Outros parâmetros / observações", "Conforme necessidade", "—"]
         ]
+      }
+    };
+
+    const dataChecklistBWT_75640 = {
+      "ULTRAFILTRAÇÃO A": {
+        statusOptions: ["Sim", "Não"],
+        atividades: [
+          "Verificar presença de vazamentos em todo o sistema",
+          "Verificar a existência de danos"
+        ],
+        params: [
+          ["Pressão da água bruta (PT 250A.2.1)", "0,5 – 3", "bar"],
+          ["Pressão na saída da bomba (PT 250A.3.1)", "2 – 3", "bar"],
+          ["Vazão de produção da ultrafiltração (FT 250A.3.1)", "15,0 – 21,5", "m³/h"],
+          ["Pressão na entrada dos módulos UF (PT 250A.4.1)", "0,2 – 4,0", "bar"],
+          ["Pressão na saída dos módulos UF (PT 250A.4.2)", "0 – 4,0", "bar"],
+          ["Pressão diferencial dos módulos UF (PDY 250A.4.3)", "0,0 – 0,8", "bar"],
+          ["Nível do tanque de filtrado (LT 250.6.1)", "60 – 95", "%"],
+          ["Vazão de concentrado na lavagem (FT 250A.7.1)", "11,5 – 40,0", "m³/h"],
+          ["Quantidade de lavagens UF (contador)", "≤ 5", "lavagens"],
+          ["Pressão de alimentação ao Osmotron A / B / Elite (PT 250A.6.1)", "4,0 – 6,0", "bar"],
+          ["Reposição de NaOCl a 3% (B 250A.8.1)", "Sim / Não", "—"],
+          ["Índice de densidade de sedimentos (SDI)", "Registrar durante operação normal", "—"]
+        ],
+        nota: "Campos S/N representam Sim/Não. A origem também informa N = não existe e E = existe. Registrar durante operação normal e detalhar anomalias."
+      },
+      "ABRANDADOR A": {
+        statusOptions: ["Sim", "Não"],
+        atividades: [
+          "Verificar presença de vazamentos",
+          "Verificar a existência de danos"
+        ],
+        params: [
+          ["Dureza da água bruta (V270A.1.11)", "0,05 – 0,5", "°dH"],
+          ["Temperatura de entrada (TT 270A.1.1)", "17 – 20", "°C"],
+          ["Pressão na entrada (PT 270A.1.1)", "3 – 6", "bar"],
+          ["Pressão na saída / entrada do próximo filtro (PI 270A.5.2)", "2 – 4", "bar"],
+          ["Abrandador F270A.2.1: valor atual (volume)", "< 170", "m³"],
+          ["Abrandador F270A.2.1: ajuste de regeneração (setpoint)", "170", "m³"],
+          ["F270A.3.1: valor atual da regulagem de regeneração", "0 – 3", "—"],
+          ["Abrandador F270A.3.1: ajuste de regeneração (setpoint)", "2 – 3", "—"],
+          ["Dureza medida pelo Testomat (QE 270A.4.1)", "0,05 – 0,2", "°dH"],
+          ["Líquido Testomat TH 2005: condição / data (QE 270A.4.1)", "< hoje* / registrar", "—"],
+          ["Troca do líquido Testomat TH 2005 (QE 270A.4.1)", "Sim / Não", "—"],
+          ["Nível do tanque de salmoura (LT 270A.2.1)", "> 75", "%"]
+        ],
+        nota: "Campos S/N representam Sim/Não. O critério “< hoje” foi mantido conforme a origem e deve ser confirmado com a BWT."
+      },
+      "OSMOTRON A — FILTRAÇÃO, DOSAGEM E OSMOSE REVERSA": {
+        statusOptions: ["Sim", "Não"],
+        atividades: [
+          "Verificar presença de vazamentos",
+          "Verificar a existência de danos"
+        ],
+        params: [
+          ["Pressão na entrada do filtro F270A.5.1 (PI 270A.5.2)", "2 – 4", "bar"],
+          ["Pressão na saída do filtro F270A.5.1 (PI 270A.5.3)", "1 – 4", "bar"],
+          ["Perda de carga do filtro F270A.5.1 (ΔP)", "0 – 2", "bar"],
+          ["Substituição do filtro de 5 µm", "Sim / Não", "—"],
+          ["Bomba dosadora P270A.11.1: percentual de dosagem", "10 – 90", "%"],
+          ["Reposição de NaHSO₃ a 10% (B270A.11.1)", "Sim / Não", "—"],
+          ["Potencial de oxirredução ORP (QE270A.11.1)", "100 – 300", "mV"],
+          ["Medição de cloro (QE270A.11.2)", "0,005 – 0,200", "mg/L"],
+          ["Bomba dosadora P270A.12.1: percentual de dosagem", "10 – 90", "%"],
+          ["Reposição de NaOH a 20% (B270A.12.1)", "Sim / Não", "—"],
+          ["Medição de pH (QE270A.12.1)", "8,0 – 9,0", "pH"],
+          ["Vazão de entrada da osmose reversa (FT270A.5.1)", "10 – 15", "m³/h"],
+          ["Pressão na entrada do Osmotron (PT270A.5.1)", "1 – 4", "bar"],
+          ["Pressão na entrada da osmose reversa (PT270A.5.4)", "7 – 20", "bar"],
+          ["Pressão do concentrado da osmose reversa (PT270A.5.5)", "5 – 12", "bar"],
+          ["Perda de carga da osmose reversa (ΔP)", "0,2 – 3", "bar"],
+          ["Fator WCF", "70 – 90", "%"],
+          ["Pressão de entrada do estágio de concentrado OR (PT270A.5.7)", "7 – 20", "bar"],
+          ["Pressão do concentrado no estágio de concentrado OR (PT270A.5.6)", "7 – 20", "bar"],
+          ["Perda de carga do estágio de concentrado OR (ΔP)", "0,2 – 3", "bar"],
+          ["Vazão do permeado do estágio de concentrado (FT270A.5.5)", "1.500 – 3.000", "L/h"]
+        ],
+        nota: "Campos S/N representam Sim/Não. Registrar durante operação normal e detalhar anomalias."
+      },
+      "OSMOTRON A — SISTEMA SEPTRON": {
+        statusOptions: ["Sim", "Não"],
+        atividades: [
+          "Verificar presença de vazamentos",
+          "Verificar a existência de danos"
+        ],
+        params: [
+          ["Vazão para dreno do estágio de concentrado (FT270A.5.2)", "1.500 – 4.000", "L/h"],
+          ["Vazão de recirculação do estágio de concentrado (FT270A.5.25)", "3.000 – 4.500", "L/h"],
+          ["Vazão de entrada do SEPTRON (FT270A.6.1)", "8.500 – 12.500", "L/h"],
+          ["Pressão na entrada do SEPTRON (PT270A.6.1)", "2 – 5", "bar"],
+          ["Condutividade após osmose reversa (QE270A.5.1)", "6 – 12", "µS/cm"],
+          ["Pressão da água de enxágue na entrada do SEPTRON (PT270A.6.2)", "2 – 5", "bar"],
+          ["Vazão da água de enxágue na entrada do SEPTRON (FT270A.6.2)", "250 – 2.000", "L/h"],
+          ["Pressão diferencial do concentrado SEPTRON (PDY270A.6.3)", "0,5 – 1,5", "bar"],
+          ["Condutividade do concentrado SEPTRON (QE270A.6.2)", "200 – 350", "µS/cm"],
+          ["Pressão da linha de diluído SEPTRON (PT270A.6.3)", "1 – 2", "bar"],
+          ["Condutividade na saída do SEPTRON (QE270A.6.3)", "≤ 0,5", "µS/cm"],
+          ["Temperatura na saída do SEPTRON (TT270A.6.3)", "18 – 30", "°C"],
+          ["Corrente elétrica SEPTRON — módulo 1 (ET270A.6.12)", "40 – 50", "A"],
+          ["Tensão elétrica SEPTRON — módulo 1 (ET270A.6.11)", "50 – 70", "V"],
+          ["Corrente elétrica SEPTRON — módulo 2 (ET270A.6.22)", "40 – 50", "A"],
+          ["Tensão elétrica SEPTRON — módulo 2 (ET270A.6.21)", "50 – 70", "V"],
+          ["Corrente elétrica SEPTRON — módulo 3 (ET270A.6.32)", "40 – 50", "A"],
+          ["Tensão elétrica SEPTRON — módulo 3 (ET270A.6.31)", "50 – 70", "V"],
+          ["Corrente elétrica SEPTRON — módulo 4 (ET270A.6.42)", "40 – 50", "A"],
+          ["Tensão elétrica SEPTRON — módulo 4 (ET270A.6.41)", "50 – 70", "V"]
+        ],
+        nota: "Campos S/N representam Sim/Não. Registrar durante operação normal e detalhar anomalias."
       }
     };
 
@@ -1318,6 +1532,11 @@
       },
       "BWT_7A": { titulo: "Tratamento de Água BWT 7A", detalheOpcao: " (Duosmostil, Multistill, Loopo, Vapotron)", temSubitem: true, isBWT: true, isElec: false, data: dataBWT_7A_Equipamentos },
       "BWT_7B": { titulo: "Tratamento de Água BWT 7B", detalheOpcao: " (Osmotron, Loopo PW, Multistill, Loopo WFI, Vapotron)", temSubitem: true, isBWT: true, isElec: false, data: dataBWT_7B_Equipamentos },
+      "BWT_75640": {
+        titulo: "Checklist Operacional BWT — UF A / Osmotron 12000 A",
+        detalheOpcao: " (Ultrafiltração, Abrandador, Osmotron e SEPTRON)",
+        temSubitem: true, isBWT: true, isElec: false, data: dataChecklistBWT_75640
+      },
       "WWT": {
         titulo: "Estação de Tratamento de Efluentes WWT",
         detalheOpcao: " (Dividido por Equipamento: Elevatória, Equalização, Reator, etc.)", temSubitem: true, isBWT: false, isElec: false,
@@ -1360,23 +1579,29 @@
       }
     };
 
+    const modulosVisiveis = ["BWT_7A", "BWT_7B", "BWT_75640"];
+
     function renderizarOpcoesModulos() {
       const optgroup = document.querySelector('#modulo optgroup');
       const filtroSelect = document.getElementById('filtro-checklist');
-      const modulos = Object.entries(modulosConfig);
+      const modulos = modulosVisiveis.map((modKey, index) => ({
+        modKey,
+        cfg: modulosConfig[modKey],
+        numero: index + 1
+      }));
 
       optgroup.replaceChildren();
       filtroSelect.querySelectorAll('option:not([value="TODOS"])').forEach(option => option.remove());
 
-      modulos.forEach(([modKey, cfg], index) => {
+      modulos.forEach(({ modKey, cfg, numero }) => {
         const option = document.createElement('option');
         option.value = modKey;
-        option.textContent = `${index + 1}. ${cfg.titulo}${cfg.detalheOpcao || ""}`;
+        option.textContent = `${numero}. ${cfg.titulo}${cfg.detalheOpcao || ""}`;
         optgroup.appendChild(option);
 
         const filtroOption = document.createElement('option');
         filtroOption.value = modKey;
-        filtroOption.textContent = `${index + 1}. ${cfg.titulo}`;
+        filtroOption.textContent = `${numero}. ${cfg.titulo}`;
         filtroSelect.appendChild(filtroOption);
       });
     }
@@ -1384,7 +1609,8 @@
     function obterTituloModulo(modKey) {
       const cfg = modulosConfig[modKey];
       if (!cfg) return "";
-      return `${Object.keys(modulosConfig).indexOf(modKey) + 1}. ${cfg.titulo}`;
+      const numero = modulosVisiveis.indexOf(modKey) + 1;
+      return `${numero > 0 ? numero : Object.keys(modulosConfig).indexOf(modKey) + 1}. ${cfg.titulo}`;
     }
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -1813,6 +2039,42 @@
       }
     }
 
+    function prepararTabelaMobile(thead, tbody) {
+      const tabela = tbody.closest('table');
+      const container = tabela.closest('.table-container');
+      let rotulos = Array.from(thead.querySelectorAll('tr:last-child th'))
+        .map(celula => celula.textContent.trim());
+
+      tabela.classList.add('mobile-card-layout');
+      if (container) container.classList.add('mobile-cards-container');
+
+      tbody.querySelectorAll('tr').forEach(linha => {
+        const celulas = Array.from(linha.children);
+        const temCabecalho = celulas.some(celula => celula.tagName === 'TH');
+
+        if (temCabecalho && linha.querySelector('.section-header-th')) {
+          linha.classList.add('mobile-section-row');
+          return;
+        }
+
+        if (temCabecalho && celulas.every(celula => celula.tagName === 'TH')) {
+          rotulos = celulas.map(celula => celula.textContent.trim());
+          linha.classList.add('mobile-column-labels');
+          return;
+        }
+
+        if (celulas.length === 1 && celulas[0].hasAttribute('colspan')) {
+          linha.classList.add('mobile-note-row');
+          return;
+        }
+
+        celulas.filter(celula => celula.tagName === 'TD').forEach((celula, indice) => {
+          celula.dataset.label = rotulos[indice] || '';
+        });
+        linha.classList.add('mobile-data-row');
+      });
+    }
+
     function renderizarTabela(cfg, selectedItem = "") {
       const thead = document.getElementById('thead-parametros');
       const tbody = document.getElementById('tbody-parametros');
@@ -1832,7 +2094,17 @@
         const equipData = cfg.data[selectedItem] || { atividades: [], params: [] };
         let htmlRows = "";
 
+        if (equipData.nota) {
+          const colspan = equipData.params && equipData.params.length > 0 ? 5 : 3;
+          htmlRows += `
+            <tr>
+              <td colspan="${colspan}"><strong>Referência / orientação:</strong> ${equipData.nota}</td>
+            </tr>
+          `;
+        }
+
         if (equipData.atividades && equipData.atividades.length > 0) {
+          const statusOptions = equipData.statusOptions || ["Conforme / OK", "Não Conforme / NOK", "N/A"];
           htmlRows += `
             <tr>
               <th colspan="3" class="section-header-th">📋 Atividades de Inspeção Operacional (${selectedItem})</th>
@@ -1849,9 +2121,7 @@
                 <td><strong>${itemText}</strong></td>
                 <td>
                   <select id="val-bwt-act-${idx}">
-                    <option value="Conforme / OK">Conforme / OK</option>
-                    <option value="Não Conforme / NOK">Não Conforme / NOK</option>
-                    <option value="N/A">N/A</option>
+                    ${statusOptions.map(status => `<option value="${status}">${status}</option>`).join("")}
                   </select>
                 </td>
                 <td><input type="text" id="obs-bwt-act-${idx}" placeholder="Obs. local do item"></td>
@@ -2039,6 +2309,8 @@
           tbody.appendChild(tr);
         });
       }
+
+      prepararTabelaMobile(thead, tbody);
     }
 
     /* FUNÇÕES DO LEITOR DE QR CODE COM ABERTURA DIRETA DE LINK (MÓDULO 13) */
