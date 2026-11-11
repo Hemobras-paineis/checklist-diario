@@ -232,6 +232,13 @@
       color: #495057; 
     }
 
+    .valor-fora-limite {
+      background-color: #fff5f5;
+      border-color: #c53030;
+      color: #c53030;
+      font-weight: 700;
+    }
+
     /* BARRA DE PROGRESSO DO MÓDULO */
     .modulo-progress-box {
       background-color: #fff5f5;
@@ -1616,6 +1623,13 @@
     document.addEventListener("DOMContentLoaded", () => {
       renderizarOpcoesModulos();
 
+      document.addEventListener("input", event => {
+        const campo = event.target;
+        if (campo instanceof HTMLInputElement && campo.classList.contains("valor-lido")) {
+          atualizarIndicacaoValorLido(campo);
+        }
+      });
+
       const now = new Date();
       now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
       document.getElementById('data').value = now.toISOString().slice(0, 16);
@@ -1834,6 +1848,66 @@
         if (document.getElementById('sp-param3')) document.getElementById('sp-param3').value = p3;
         if (document.getElementById('sp-param4')) document.getElementById('sp-param4').value = p4;
       }
+
+      document.querySelectorAll("#tbody-parametros .valor-lido").forEach(atualizarIndicacaoValorLido);
+    }
+
+    function converterValorNumerico(valor) {
+      const texto = String(valor || "").trim().replace(",", ".");
+      if (!/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(texto)) return null;
+
+      const numero = Number(texto);
+      return Number.isFinite(numero) ? numero : null;
+    }
+
+    function avaliarLimite(valorLido, limite) {
+      const valor = converterValorNumerico(valorLido);
+      if (valor === null) return null;
+
+      const textoLimite = String(limite || "").trim();
+      const faixa = textoLimite.match(/^\s*([+-]?\d+(?:[.,]\d+)?)\s*(?:–|—|-|\ba\b|\baté\b)\s*([+-]?\d+(?:[.,]\d+)?)(?:\s*[^0-9]*)?$/i);
+
+      if (faixa) {
+        const minimo = converterValorNumerico(faixa[1]);
+        const maximo = converterValorNumerico(faixa[2]);
+        if (minimo === null || maximo === null) return null;
+        return valor < Math.min(minimo, maximo) || valor > Math.max(minimo, maximo);
+      }
+
+      const operador = textoLimite.match(/^\s*(≤|>=|≥|<=|<|>)\s*([+-]?\d+(?:[.,]\d+)?)/i);
+      if (operador) {
+        const referencia = converterValorNumerico(operador[2]);
+        if (referencia === null) return null;
+        switch (operador[1]) {
+          case "<":
+          case "≤":
+          case "<=":
+            return operador[1] === "<" ? valor >= referencia : valor > referencia;
+          case ">":
+          case "≥":
+          case ">=":
+            return operador[1] === ">" ? valor <= referencia : valor < referencia;
+          default:
+            return null;
+        }
+      }
+
+      const valorUnico = textoLimite.match(/^\s*([+-]?\d+(?:[.,]\d+)?)\s*(?:[^0-9]*)$/);
+      if (!valorUnico) return null;
+      const setpoint = converterValorNumerico(valorUnico[1]);
+      return setpoint === null ? null : valor !== setpoint;
+    }
+
+    const MARCA_FORA_LIMITE = " [FORA DO LIMITE]";
+
+    function marcaForaLimite(valorLido, limite) {
+      return avaliarLimite(valorLido, limite) === true ? MARCA_FORA_LIMITE : "";
+    }
+
+    function atualizarIndicacaoValorLido(campo) {
+      const limite = campo.closest("tr")?.querySelector(".readonly-input")?.value;
+      const foraDoLimite = avaliarLimite(campo.value, limite);
+      campo.classList.toggle("valor-fora-limite", foraDoLimite === true);
     }
 
     function restaurarValoresSubitem(dados) {
@@ -1909,7 +1983,7 @@
             const val = document.getElementById(`lido-bwt-param-${idx}`)?.value || "N/I";
             const obs = document.getElementById(`obs-bwt-param-${idx}`)?.value || "";
             bwtParam.push({ val, obs });
-            let text = `  • ${paramTag}: ${val} ${unid} (Limite: ${limit})`;
+            let text = `  • ${paramTag}: ${val} ${unid} (Limite: ${limit})${marcaForaLimite(val, limit)}`;
             if (obs.trim() !== "") { text += ` — Obs: ${obs.trim()}`; }
             itensDetalhados.push(text);
           });
@@ -1994,16 +2068,21 @@
 
         subData.paramsHVAC = { p1, o1, p2, o2, p3, o3, p4, o4 };
 
+        const m = n => marcaForaLimite(
+          document.getElementById('lido-param' + n)?.value,
+          document.getElementById('sp-param' + n)?.value
+        );
+
         if (isCRU) {
-          itensDetalhados.push(`• Pressão de Sucção: ${p1} psi${o1.trim() ? ' — Obs: ' + o1.trim() : ''}`);
-          itensDetalhados.push(`• Temperatura: ${p2} °C${o2.trim() ? ' — Obs: ' + o2.trim() : ''}`);
-          itensDetalhados.push(`• Pressão de Descarga: ${p3} psi${o3.trim() ? ' — Obs: ' + o3.trim() : ''}`);
-          itensDetalhados.push(`• Superaquecimento Compressor: ${p4} °C${o4.trim() ? ' — Obs: ' + o4.trim() : ''}`);
+          itensDetalhados.push(`• Pressão de Sucção: ${p1} psi${m(1)}${o1.trim() ? ' — Obs: ' + o1.trim() : ''}`);
+          itensDetalhados.push(`• Temperatura: ${p2} °C${m(2)}${o2.trim() ? ' — Obs: ' + o2.trim() : ''}`);
+          itensDetalhados.push(`• Pressão de Descarga: ${p3} psi${m(3)}${o3.trim() ? ' — Obs: ' + o3.trim() : ''}`);
+          itensDetalhados.push(`• Superaquecimento Compressor: ${p4} °C${m(4)}${o4.trim() ? ' — Obs: ' + o4.trim() : ''}`);
         } else {
-          itensDetalhados.push(`• Vazão de Ar: ${p1} m³/h${o1.trim() ? ' — Obs: ' + o1.trim() : ''}`);
-          itensDetalhados.push(`• Temperatura: ${p2} °C${o2.trim() ? ' — Obs: ' + o2.trim() : ''}`);
-          itensDetalhados.push(`• Pressão Diferencial: ${p3} Pa${o3.trim() ? ' — Obs: ' + o3.trim() : ''}`);
-          itensDetalhados.push(`• Válvula / Umidade: ${p4}${o4.trim() ? ' — Obs: ' + o4.trim() : ''}`);
+          itensDetalhados.push(`• Vazão de Ar: ${p1} m³/h${m(1)}${o1.trim() ? ' — Obs: ' + o1.trim() : ''}`);
+          itensDetalhados.push(`• Temperatura: ${p2} °C${m(2)}${o2.trim() ? ' — Obs: ' + o2.trim() : ''}`);
+          itensDetalhados.push(`• Pressão Diferencial: ${p3} Pa${m(3)}${o3.trim() ? ' — Obs: ' + o3.trim() : ''}`);
+          itensDetalhados.push(`• Válvula / Umidade: ${p4}${m(4)}${o4.trim() ? ' — Obs: ' + o4.trim() : ''}`);
         }
       }
 
@@ -2148,7 +2227,7 @@
               <tr>
                 <td><strong>${paramTag}</strong></td>
                 <td><input type="text" value="${limit}" readonly class="readonly-input"></td>
-                <td><input type="text" id="lido-bwt-param-${idx}" placeholder="Valor lido"></td>
+                <td><input type="text" id="lido-bwt-param-${idx}" class="valor-lido" placeholder="Valor lido"></td>
                 <td>${unid}</td>
                 <td><input type="text" id="obs-bwt-param-${idx}" placeholder="Obs. do parâmetro"></td>
               </tr>
@@ -2278,17 +2357,17 @@
         
         if (isCRU) {
           tbody.innerHTML = `
-            <tr><td><strong>Pressão de Sucção</strong></td><td><input type="text" id="sp-param1" readonly class="readonly-input"></td><td><input type="text" id="lido-param1" placeholder="Ex: 2.1"></td><td>psi</td><td><input type="text" id="obs-param1" placeholder="Obs local"></td></tr>
-            <tr><td><strong>Temperatura</strong></td><td><input type="text" id="sp-param2" readonly class="readonly-input"></td><td><input type="text" id="lido-param2" placeholder="Ex: 5.0"></td><td>°C</td><td><input type="text" id="obs-param2" placeholder="Obs local"></td></tr>
-            <tr><td><strong>Pressão de Descarga</strong></td><td><input type="text" id="sp-param3" readonly class="readonly-input"></td><td><input type="text" id="lido-param3" placeholder="Ex: 13.2"></td><td>psi</td><td><input type="text" id="obs-param3" placeholder="Obs local"></td></tr>
-            <tr><td><strong>Superaquec. Compressor</strong></td><td><input type="text" id="sp-param4" readonly class="readonly-input"></td><td><input type="text" id="lido-param4" placeholder="Ex: 15.0"></td><td>°C</td><td><input type="text" id="obs-param4" placeholder="Obs local"></td></tr>
+            <tr><td><strong>Pressão de Sucção</strong></td><td><input type="text" id="sp-param1" readonly class="readonly-input"></td><td><input type="text" id="lido-param1" class="valor-lido" placeholder="Ex: 2.1"></td><td>psi</td><td><input type="text" id="obs-param1" placeholder="Obs local"></td></tr>
+            <tr><td><strong>Temperatura</strong></td><td><input type="text" id="sp-param2" readonly class="readonly-input"></td><td><input type="text" id="lido-param2" class="valor-lido" placeholder="Ex: 5.0"></td><td>°C</td><td><input type="text" id="obs-param2" placeholder="Obs local"></td></tr>
+            <tr><td><strong>Pressão de Descarga</strong></td><td><input type="text" id="sp-param3" readonly class="readonly-input"></td><td><input type="text" id="lido-param3" class="valor-lido" placeholder="Ex: 13.2"></td><td>psi</td><td><input type="text" id="obs-param3" placeholder="Obs local"></td></tr>
+            <tr><td><strong>Superaquec. Compressor</strong></td><td><input type="text" id="sp-param4" readonly class="readonly-input"></td><td><input type="text" id="lido-param4" class="valor-lido" placeholder="Ex: 15.0"></td><td>°C</td><td><input type="text" id="obs-param4" placeholder="Obs local"></td></tr>
           `;
         } else {
           tbody.innerHTML = `
-            <tr><td><strong>Vazão de Ar</strong></td><td><input type="text" id="sp-param1" readonly class="readonly-input"></td><td><input type="text" id="lido-param1" placeholder="Ex: 2500"></td><td>m³/h</td><td><input type="text" id="obs-param1" placeholder="Obs local"></td></tr>
-            <tr><td><strong>Temperatura</strong></td><td><input type="text" id="sp-param2" readonly class="readonly-input"></td><td><input type="text" id="lido-param2" placeholder="Ex: 20.0"></td><td>°C</td><td><input type="text" id="obs-param2" placeholder="Obs local"></td></tr>
-            <tr><td><strong>Pressão Diferencial</strong></td><td><input type="text" id="sp-param3" readonly class="readonly-input"></td><td><input type="text" id="lido-param3" placeholder="Ex: 25.0"></td><td>Pa/bar</td><td><input type="text" id="obs-param3" placeholder="Obs local"></td></tr>
-            <tr><td><strong>Válvula / Umidade</strong></td><td><input type="text" id="sp-param4" readonly class="readonly-input"></td><td><input type="text" id="lido-param4" placeholder="Ex: 73.8"></td><td>%|g/m³</td><td><input type="text" id="obs-param4" placeholder="Obs local"></td></tr>
+            <tr><td><strong>Vazão de Ar</strong></td><td><input type="text" id="sp-param1" readonly class="readonly-input"></td><td><input type="text" id="lido-param1" class="valor-lido" placeholder="Ex: 2500"></td><td>m³/h</td><td><input type="text" id="obs-param1" placeholder="Obs local"></td></tr>
+            <tr><td><strong>Temperatura</strong></td><td><input type="text" id="sp-param2" readonly class="readonly-input"></td><td><input type="text" id="lido-param2" class="valor-lido" placeholder="Ex: 20.0"></td><td>°C</td><td><input type="text" id="obs-param2" placeholder="Obs local"></td></tr>
+            <tr><td><strong>Pressão Diferencial</strong></td><td><input type="text" id="sp-param3" readonly class="readonly-input"></td><td><input type="text" id="lido-param3" class="valor-lido" placeholder="Ex: 25.0"></td><td>Pa/bar</td><td><input type="text" id="obs-param3" placeholder="Obs local"></td></tr>
+            <tr><td><strong>Válvula / Umidade</strong></td><td><input type="text" id="sp-param4" readonly class="readonly-input"></td><td><input type="text" id="lido-param4" class="valor-lido" placeholder="Ex: 73.8"></td><td>%|g/m³</td><td><input type="text" id="obs-param4" placeholder="Obs local"></td></tr>
           `;
         }
       } else {
@@ -2750,6 +2829,19 @@
           2: { cellWidth: 30 },
           3: { cellWidth: 55 },
           4: { cellWidth: 'auto' }
+        },
+        willDrawCell: (data) => {
+          if (data.section !== 'body' || data.column.index !== 4) return;
+          if (!data.cell.text.some(l => l.includes(MARCA_FORA_LIMITE.trim()))) return;
+          const passo = doc.getLineHeight() / doc.internal.scaleFactor;
+          data.cell.text.forEach((linha, n) => {
+            const fora = linha.includes(MARCA_FORA_LIMITE.trim());
+            doc.setFont(undefined, fora ? 'bold' : 'normal');
+            doc.setTextColor(...(fora ? [197, 48, 48] : [50, 50, 50]));
+            doc.text(linha, data.cell.x + 3, data.cell.y + 3 + n * passo, { baseline: 'top' });
+          });
+          doc.setFont(undefined, 'normal');
+          data.cell.text = [];
         }
       });
 
